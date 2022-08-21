@@ -26,7 +26,7 @@ public class UserStorageImpl implements UserStorage {
             }
         }
         if (needUser == null) {
-            throw new NoSuchElementException("Пользователь с ID = " + id +" не найден");
+            throw new NoSuchElementException("Пользователь не найден");
         }
         return needUser;
     }
@@ -86,7 +86,7 @@ public class UserStorageImpl implements UserStorage {
             throw new ExistsException("Пользователь с таким email уже существует");
         }
         if (user.getEmail() != null && !user.getEmail().toLowerCase().matches(EMAIL_VALIDATION)) {
-            throw new IllegalArgumentException("Не допустимый email!");
+            throw new IllegalArgumentException("Недопустимый email");
         }
     }
 }

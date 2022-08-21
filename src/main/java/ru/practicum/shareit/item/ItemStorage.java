@@ -20,4 +20,4 @@ public interface ItemStorage {
     Item addItem(ItemDto item, long userId) throws NoSuchElementException, IllegalArgumentException;
 
     Item changeItem(long itemId, long userId, Item item) throws AccessDeniedException;
-    }
+}
