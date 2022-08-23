@@ -30,7 +30,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(long id, User user) throws NoSuchElementException, ExistsException, IllegalArgumentException {
+    public User updateUser(long id, User user) throws NoSuchElementException, ExistsException,
+            IllegalArgumentException {
         return userStorage.updateUser(id, user);
     }
 

@@ -5,10 +5,6 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
-/**
- * // TODO .
- */
-@Data
 @AllArgsConstructor
 public class BookingDto {
     private LocalDate start;

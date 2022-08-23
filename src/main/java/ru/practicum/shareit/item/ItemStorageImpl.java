@@ -67,7 +67,8 @@ public class ItemStorageImpl implements ItemStorage {
     @Override
     public Item changeItem(long itemId, long userId, Item item) throws AccessDeniedException {
         if (getItemById(itemId).getOwner().getId() != userId) {
-            throw new AccessDeniedException("Редактирование предмета запрещено! Редактировать может только его владелец");
+            throw new AccessDeniedException("Редактирование предмета запрещено! Редактировать может только его" +
+                    " владелец");
         }
         Item oldItem = items.get(itemId);
         String name;
