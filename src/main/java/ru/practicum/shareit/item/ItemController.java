@@ -22,8 +22,8 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getAll(@RequestHeader(value = "X-Sharer-User-Id") long userId) throws NoSuchElementException {
-        return itemService.getAll(userId);
+    public List<ItemDto> getAllItems(@RequestHeader(value = "X-Sharer-User-Id") long userId) throws NoSuchElementException {
+        return itemService.getAllItems(userId);
     }
 
     @GetMapping("{itemId}")

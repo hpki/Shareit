@@ -13,11 +13,13 @@ public interface ItemStorage {
 
     ItemDto get(long itemId) throws NoSuchElementException;
 
-    List<ItemDto> getAll(long userId);
+    List<ItemDto> getAllItems(long userId);
 
     Item getItemById(long itemId);
 
     Item addItem(ItemDto item, long userId) throws NoSuchElementException, IllegalArgumentException;
 
     Item changeItem(long itemId, long userId, Item item) throws AccessDeniedException;
+
+
 }

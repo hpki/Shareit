@@ -31,14 +31,14 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public List<ItemDto> getAll(long userId) {
+    public List<ItemDto> getAllItems(long userId) {  //должен быть список, т.к. у пользователя может
+                                                     // быть несколько предметов
         List<ItemDto> list = new ArrayList<>();
         boolean wasFound = false;
         for (Item item : items.values()) {
             if (item.getOwner().getId() == userId) {
                 wasFound = true;
                 list.add(ItemMapper.toItemDto(item));
-                break;
             }
         }
         if (!wasFound) {
@@ -103,4 +103,5 @@ public class ItemStorageImpl implements ItemStorage {
         }
         return true;
     }
+
 }

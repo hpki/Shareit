@@ -13,9 +13,10 @@ public interface ItemService {
 
     ItemDto get(long itemId) throws NoSuchElementException;
 
-    List<ItemDto> getAll(long userId) throws NoSuchElementException;
+    List<ItemDto> getAllItems(long userId) throws NoSuchElementException;
 
     Item addItem(ItemDto item, long userId) throws NoSuchElementException, IllegalArgumentException;
 
     Item changeItem(long itemId, long userId, Item item) throws AccessDeniedException;
+
 }

@@ -23,6 +23,7 @@ public class UserStorageImpl implements UserStorage {
         for (User user : users.values()) {
             if (user.getId() == id) {
                 needUser = user;
+                break;
             }
         }
         if (needUser == null) {
@@ -55,6 +56,7 @@ public class UserStorageImpl implements UserStorage {
         for (User cashedUser : users.values()) {
             if (cashedUser.getId() == id) {
                 oldUser = cashedUser;
+                break;
             }
         }
         if (oldUser == null) {

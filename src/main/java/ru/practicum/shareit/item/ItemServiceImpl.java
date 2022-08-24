@@ -43,8 +43,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAll(long userId) throws NoSuchElementException {
-        return itemStorage.getAll(userId);
+    public List<ItemDto> getAllItems(long userId) throws NoSuchElementException {
+        return itemStorage.getAllItems(userId);
     }
 
     @Override
