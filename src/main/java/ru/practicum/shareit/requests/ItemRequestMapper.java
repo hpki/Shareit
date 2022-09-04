@@ -1,5 +1,6 @@
 package ru.practicum.shareit.requests;
 
+
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
 
 public class ItemRequestMapper {
@@ -7,4 +8,3 @@ public class ItemRequestMapper {
         return new ItemRequestDto(itemRequest.getDescription());
     }
 }
-

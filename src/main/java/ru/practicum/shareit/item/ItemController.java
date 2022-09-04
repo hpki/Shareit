@@ -3,9 +3,11 @@ package ru.practicum.shareit.item;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
+import javax.validation.Valid;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +16,6 @@ import java.util.NoSuchElementException;
 @RestController
 @RequestMapping("/items")
 public class ItemController {
-
     private final ItemService itemService;
 
     public ItemController(ItemService itemService) {
@@ -22,31 +23,39 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getAllItems(@RequestHeader(value = "X-Sharer-User-Id") long userId) throws NoSuchElementException {
-        return itemService.getAllItems(userId);
+    public List<ItemDto> getAll(@RequestHeader(value = "X-Sharer-User-Id") long userId) throws NoSuchElementException {
+        return itemService.getAll(userId);
     }
 
-    @GetMapping("{itemId}")
-    public ItemDto getItem(@PathVariable long itemId)
+    @GetMapping("/{itemId}")
+    public ItemDto getItem(@PathVariable long itemId, @RequestHeader(value = "X-Sharer-User-Id") long userId)
             throws NoSuchElementException {
-        return itemService.get(itemId);
+        return itemService.get(itemId, userId);
     }
 
     @PostMapping
-    public Item addItem(@RequestBody ItemDto item, @RequestHeader(value = "X-Sharer-User-Id") long userId)
+    public Item addItem(@Valid @RequestBody ItemDto item, @RequestHeader(value = "X-Sharer-User-Id") long userId)
             throws NoSuchElementException, IllegalArgumentException {
         return itemService.addItem(item, userId);
     }
 
-    @PatchMapping("{itemId}")
+    @PatchMapping("/{itemId}")
     public Item editItem(@PathVariable long itemId, @RequestHeader(value = "X-Sharer-User-Id") long userId,
-                         @RequestBody Item item) throws AccessDeniedException {
-        return itemService.changeItem(itemId, userId, item);
+                         @RequestBody ItemDto item) throws AccessDeniedException {
+        return itemService.editItem(itemId, userId, item);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchByWord(@RequestParam String text) {
         return itemService.search(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@PathVariable("itemId") Long itemId,
+                                 @RequestBody CommentDto comment,
+                                 @RequestHeader("X-Sharer-User-Id") Long userPrincipal)
+            throws NoSuchElementException, IllegalArgumentException {
+        return itemService.addComment(itemId, comment, userPrincipal);
     }
 
     @ExceptionHandler

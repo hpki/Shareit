@@ -1,18 +1,18 @@
 package ru.practicum.shareit.user;
 
-import ru.practicum.shareit.exceptions.ExistsException;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
-public interface UserStorage {
-    List<User> getAll();
+public interface UserStorage extends JpaRepository<User, Long> {
+    Optional<User> findByEmail(String email);
 
-    User getUserById(long id) throws NoSuchElementException;
+    @Query(value = "select * from users as u\n" +
+            "left join bookings b on u.id = b.booker_id\n" +
+            "left join items i on b.item_id = i.id\n" +
+            "where u.id = ? and i.id = ? and b.end_date < now();", nativeQuery = true)
+    User checkUserBooking(Long userId, Long itemId);
 
-    User addUser(User user) throws ExistsException;
 
-    User updateUser(long id, User user) throws NoSuchElementException, ExistsException;
-
-    void deleteUserById(long id);
 }
