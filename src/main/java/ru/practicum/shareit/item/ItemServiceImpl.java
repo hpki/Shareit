@@ -134,9 +134,14 @@ public class ItemServiceImpl implements ItemService {
     private ItemDto setLastAndNextBooking(ItemDto itemDto, Long userId) {
         Booking lastBooking;
         Booking nextBooking;
-        lastBooking = bookingStorage.findLastBooking(itemDto.getOwner().getId(), itemDto.getId());
-        nextBooking = bookingStorage.findNextBooking(itemDto.getOwner().getId(), itemDto.getId());
 
+        if (!itemDto.getOwner().getId().equals(userId)) {
+            nextBooking = null;
+            lastBooking = null;
+        } else {
+            lastBooking = bookingStorage.findLastBooking(itemDto.getOwner().getId(), itemDto.getId());
+            nextBooking = bookingStorage.findNextBooking(itemDto.getOwner().getId(), itemDto.getId());
+        }
         itemDto.setLastBooking(lastBooking == null ? null :
                 new ItemDto.Booking(lastBooking.getId(), lastBooking.getBooker().getId()));
         itemDto.setNextBooking(nextBooking == null ? null :
