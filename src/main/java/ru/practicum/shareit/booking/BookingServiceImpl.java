@@ -50,8 +50,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking addBooking(BookingRequest bookingRequest, long userId)
             throws NoSuchElementException, ItemIsNotAvailableException, IllegalArgumentException, AccessException {
-        Booking booking = new Booking();
         isValidRequest(bookingRequest);
+        Booking booking = new Booking();
         User user = userService.getUserById(userId);
         Status status = Status.WAITING;
         long itemId = bookingRequest.getItemId();
