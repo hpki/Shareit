@@ -1,0 +1,58 @@
+package ru.practicum.shareit.user;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+
+@ExtendWith(MockitoExtension.class)
+public class UserServiceImplTest {
+    @Mock
+    UserStorage userStorage;
+
+    @InjectMocks
+    UserServiceImpl userService;
+
+    User user = new User(1, "testName", "testEmail@yandex.ru");
+    User userUpdated = new User(1, "testNameUpdated", "testEmailUpdated@yandex.ru");
+
+    @Test
+    void getAllUsers() {
+        Mockito.when(userStorage.findAll()).thenReturn(List.of(user));
+        Assertions.assertEquals(List.of(UserMapper.toUserDto(user)), userService.getAll());
+    }
+
+    @Test
+    void getUser() {
+        Mockito.when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
+        Assertions.assertEquals(UserMapper.toUserDto(user), userService.getUser(user.getId()));
+    }
+
+    @Test
+    void addUser() {
+        Mockito.when(userStorage.save(any())).thenReturn(user);
+        Assertions.assertEquals(UserMapper.toUserDto(user), userService.addUser(UserMapper.toUserDto(user)));
+    }
+
+    @Test
+    void editUser() {
+        Mockito.when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
+        Mockito.when(userStorage.save(any())).thenReturn(userUpdated);
+        Assertions.assertEquals(UserMapper.toUserDto(userUpdated), userService.editUser(user.getId(), UserMapper.toUserDto(user)));
+    }
+
+    @Test
+    void deleteUser() {
+        userService.deleteUser(user.getId());
+        Mockito.verify(userStorage, Mockito.times(1)).deleteById(user.getId());
+    }
+}

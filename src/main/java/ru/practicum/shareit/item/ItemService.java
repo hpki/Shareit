@@ -2,24 +2,21 @@ package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.ItemWithBookingDto;
+import ru.practicum.shareit.item.model.Comment;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public interface ItemService {
+    ItemDto addItem(long userId, ItemDto itemDto);
+
+    ItemDto editItem(long userId, long itemId, ItemDto itemDto);
+
+    ItemWithBookingDto getItem(long userId, long itemId);
+
+    List<ItemWithBookingDto> getAll(long userId);
+
     List<ItemDto> search(String text);
 
-    ItemDto get(long itemId, long userId) throws NoSuchElementException;
-
-    List<ItemDto> getAll(long userId) throws NoSuchElementException;
-
-    Item addItem(ItemDto item, long userId) throws NoSuchElementException, IllegalArgumentException;
-
-    Item editItem(long itemId, long userId, ItemDto item) throws AccessDeniedException;
-
-    Item getItemById(long itemId) throws NoSuchElementException;
-
-    CommentDto addComment(Long itemId, CommentDto comment, Long userId) throws IllegalArgumentException;
+    CommentDto addComment(long UserId, long itemId, Comment comment);
 }

@@ -1,20 +1,17 @@
 package ru.practicum.shareit.user;
 
-import ru.practicum.shareit.exceptions.ExistsException;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public interface UserService {
-    List<User> getAll();
+    List<UserDto> getAll();
 
-    User getUserById(long id) throws NoSuchElementException;
+    UserDto getUser(long userId);
 
-    User addUser(UserDto user) throws ExistsException;
+    UserDto addUser(UserDto userDto);
 
-    User updateUser(long id, User user) throws NoSuchElementException, ExistsException,
-            IllegalArgumentException;
+    UserDto editUser(long userId, UserDto userDto);
 
-    void deleteUserById(long id);
+    void deleteUser(long userId);
 }

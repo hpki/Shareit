@@ -1,54 +1,55 @@
 package ru.practicum.shareit.user;
 
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
 
-    public UserServiceImpl(UserStorage userRepository) {
-        this.userStorage = userRepository;
+    public UserServiceImpl(UserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
+
+
+    @Override
+    public List<UserDto> getAll() {
+        return userStorage.findAll().stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<User> getAll() {
-        return userStorage.findAll();
+    public UserDto getUser(long userId) {
+        return UserMapper.toUserDto(userStorage.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден")));
     }
 
     @Override
-    public User getUserById(long id) throws NoSuchElementException {
-        if (userStorage.findById(id).isEmpty()) {
-            throw new NoSuchElementException("Пользователь с таким id не найден!");
-        } else {
-            return userStorage.findById(id).get();
+    public UserDto addUser(UserDto userDto) {
+        User user = userStorage.save(UserMapper.toUser(userDto));
+        return UserMapper.toUserDto(user);
+    }
+
+    @Override
+    public UserDto editUser(long userId, UserDto userDto) {
+        User user = userStorage.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
         }
-    }
-
-    @Override
-    public User addUser(UserDto userDto) throws IllegalArgumentException {
-        User user = UserMapper.toUser(userDto);
-        return userStorage.save(user);
-    }
-
-    @Override
-    public User updateUser(long id, User user) throws NoSuchElementException, IllegalArgumentException {
-        Optional<User> oldUserOpt = userStorage.findById(id);
-        if (oldUserOpt.isEmpty()) {
-            throw new NoSuchElementException("Пользователь не найден!");
+        if (userDto.getEmail() != null) {
+            user.setEmail(userDto.getEmail());
         }
-        User oldUser = oldUserOpt.get();
-        User newUser = new User(id, user.getName() == null ? oldUser.getName() : user.getName(),
-                user.getEmail() == null ? oldUser.getEmail() : user.getEmail());
-        return userStorage.save(newUser);
+        return UserMapper.toUserDto(userStorage.save(user));
     }
 
     @Override
-    public void deleteUserById(long id) {
-        userStorage.deleteById(id);
+    public void deleteUser(long userId) {
+        userStorage.deleteById(userId);
     }
 }

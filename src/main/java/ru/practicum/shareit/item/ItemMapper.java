@@ -1,33 +1,58 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemWithBookingDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.requests.ItemRequest;
+import ru.practicum.shareit.user.User;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ItemMapper {
-    public static ItemDto toItemDto(Item item) {
-        List<ItemDto.Comment> comments = item.getComments().stream()
-                .map(comment -> new ItemDto.Comment(
-                        comment.getId(),
-                        comment.getText(),
-                        comment.getAuthor().getName(),
-                        comment.getCreated()
-                ))
-                .collect(Collectors.toList());
-
-
+    public static ItemDto toItemDto(Item item, List<CommentDto> comments) {
         return new ItemDto(
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.getAvailable(),
-                new ItemDto.User(
-                        item.getOwner().getId(),
-                        item.getOwner().getName()
-                ),
+                item.isAvailable(),
+                comments,
+                item.getRequest() == null ? null : item.getRequest().getId()
+        );
+    }
+
+    public static ItemWithBookingDto toItemWithBookingDto(Item item, BookingDto nextBooking, BookingDto lastBooking, List<CommentDto> comments) {
+        return new ItemWithBookingDto(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.isAvailable(),
+                nextBooking,
+                lastBooking,
                 comments
+        );
+    }
+
+    public static Item toItem(User user, ItemDto itemDto) {
+        return new Item(
+                itemDto.getId(),
+                itemDto.getName(),
+                itemDto.getDescription(),
+                itemDto.getAvailable(),
+                user,
+                null
+        );
+    }
+
+    public static Item toItemWithRequest(User user, ItemDto itemDto, ItemRequest itemRequest) {
+        return new Item(
+                itemDto.getId(),
+                itemDto.getName(),
+                itemDto.getDescription(),
+                itemDto.getAvailable(),
+                user,
+                itemRequest
         );
     }
 }

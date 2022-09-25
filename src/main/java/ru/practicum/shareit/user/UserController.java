@@ -1,74 +1,43 @@
 package ru.practicum.shareit.user;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exceptions.ExistsException;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.validation.UserUpdate;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
 
-@Slf4j
 @RestController
-@RequestMapping(path = "/users")
+@RequiredArgsConstructor
+@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     @GetMapping
-    public List<User> getAll() {
+    public List<UserDto> getAll() {
         return userService.getAll();
     }
 
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable long id) {
-        return userService.getUserById(id);
+    @GetMapping("/{userId}")
+    public UserDto getUserById(@PathVariable long userId) {
+        return userService.getUser(userId);
     }
 
     @PostMapping
-    public User createUser(@Valid @RequestBody UserDto user) throws ExistsException, IllegalArgumentException {
-        return userService.addUser(user);
+    public UserDto addUser(@RequestBody @Valid UserDto userDto) {
+        return userService.addUser(userDto);
     }
 
-    @PatchMapping("/{id}")
-    public User updateUser(@PathVariable long id, @RequestBody User user) throws NoSuchElementException,
-            ExistsException, IllegalArgumentException {
-        return userService.updateUser(id, user);
+    @PatchMapping("/{userId}")
+    public UserDto editUser(@PathVariable long userId,
+                                      @RequestBody @Validated(UserUpdate.class) UserDto userDto) {
+        return userService.editUser(userId, userDto);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable long id) throws NoSuchElementException {
-        userService.deleteUserById(id);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<Map<String, String>> handleEntityIsAlreadyExist(final ExistsException e) {
-        return new ResponseEntity<>(
-                Map.of("message", e.getMessage()),
-                HttpStatus.CONFLICT
-        );
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<Map<String, String>> handleIllegalArgument(final IllegalArgumentException e) {
-        return new ResponseEntity<>(
-                Map.of("message", e.getMessage()),
-                HttpStatus.BAD_REQUEST
-        );
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<Map<String, String>> handleIllegalArgument(final NoSuchElementException e) {
-        return new ResponseEntity<>(
-                Map.of("message", e.getMessage()),
-                HttpStatus.NOT_FOUND
-        );
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable long userId) {
+        userService.deleteUser(userId);
     }
 }

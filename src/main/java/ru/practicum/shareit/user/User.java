@@ -6,22 +6,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer"})
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private long id;
-
-    @Column(name = "name")
+    @NotNull
+    @NotBlank
     private String name;
-
-    @Column(name = "email", unique = true)
+    @Email
+    @NotNull
+    @NotBlank
     private String email;
 }

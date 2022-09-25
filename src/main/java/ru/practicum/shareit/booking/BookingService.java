@@ -1,26 +1,18 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.exeptions.BookingUnsupportedTypeException;
-import ru.practicum.shareit.exeptions.ItemIsNotAvailableException;
 
-import java.nio.file.AccessDeniedException;
-import java.rmi.AccessException;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public interface BookingService {
-    Booking getBookingById(long bookingId, long userId) throws AccessDeniedException;
+    Booking addBooking(long userId, BookingDto bookingDto);
 
-    Booking addBooking(BookingRequest bookingRequest, long userId)
-            throws NoSuchElementException, ItemIsNotAvailableException, IllegalArgumentException, AccessException;
+    Booking setApproved(long userId, long bookingId, boolean approved);
 
-    Booking setApproved(long bookingId, long userId, boolean isApproved) throws AccessDeniedException;
+    Booking getBookingById(long userId, long bookingId);
 
-    List<BookingDto> getAllForUser(long userId, String state)
-            throws NoSuchElementException, BookingUnsupportedTypeException;
+    List<Booking> getAll(long userId, String state, Pageable pageable);
 
-    List<BookingDto> getBookingsByOwner(Long userId, String state) throws BookingUnsupportedTypeException;
-
-    List<Booking> checkBookingsForItem(long itemId, long userId);
+    List<Booking> getAllBookingsByOwner(long userId, String state, Pageable pageable);
 }

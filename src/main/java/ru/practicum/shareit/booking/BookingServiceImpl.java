@@ -1,182 +1,136 @@
 package ru.practicum.shareit.booking;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.exeptions.BookingUnsupportedTypeException;
-import ru.practicum.shareit.exeptions.ItemIsNotAvailableException;
+import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.User;
 
-import java.nio.file.AccessDeniedException;
-import java.rmi.AccessException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
+@Slf4j
 public class BookingServiceImpl implements BookingService {
     private final BookingStorage bookingStorage;
     private final ItemStorage itemStorage;
-    private final UserService userService;
+    private final UserStorage userStorage;
 
-    public BookingServiceImpl(BookingStorage bookingStorage, ItemStorage itemStrorage,
-                              UserService userService) {
+    public BookingServiceImpl(BookingStorage bookingStorage, ItemStorage itemStorage, UserStorage userStorage) {
         this.bookingStorage = bookingStorage;
-        this.itemStorage = itemStrorage;
-        this.userService = userService;
+        this.itemStorage = itemStorage;
+        this.userStorage = userStorage;
     }
 
     @Override
-    public Booking getBookingById(long bookingId, long userId) throws AccessDeniedException {
-
-        Optional<Booking> bookingOptional = bookingStorage.findById(bookingId);
-        if (bookingOptional.isEmpty()) {
-            throw new NoSuchElementException("Бронирование не найдено!");
+    public Booking addBooking(long userId, BookingDto bookingDto) {
+        Item item = itemStorage.findById(bookingDto.getItemId())
+                .orElseThrow(() -> new ItemNotFoundException("Вещь с таким id не найдена!"));
+        if (!item.isAvailable()) {
+            throw new ItemNotAvailableException("Вещь недоступна для бронирования!");
         }
-        Booking booking = bookingOptional.get();
-        boolean state = userId != (booking.getBooker().getId()) &&
-                userId != (booking.getItem().getOwner().getId());
-
-        if (state) {
-            throw new AccessDeniedException("Пользователь с таким ID не является владельцем бронирования!");
+        User user = userStorage.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с таким id не найден!"));
+        if (user.equals(item.getOwner())) {
+            throw new UserNotFoundException("Владелец вещи не может её забронировать!");
         }
-
+        if (bookingDto.getStart().isBefore(LocalDateTime.now()) || bookingDto.getEnd().isBefore(bookingDto.getStart())) {
+            throw new WrongTimeException("Неверное время старта и/или конца бронирования!");
+        }
+        Booking booking = bookingStorage.save(
+                new Booking(0,
+                        bookingDto.getStart(),
+                        bookingDto.getEnd(),
+                        item,
+                        user,
+                        Status.WAITING)
+        );
         return booking;
     }
 
     @Override
-    public Booking addBooking(BookingRequest bookingRequest, long userId)
-            throws NoSuchElementException, ItemIsNotAvailableException, IllegalArgumentException, AccessException {
-        isValidRequest(bookingRequest);
-        Booking booking = new Booking();
-        User user = userService.getUserById(userId);
-        Status status = Status.WAITING;
-        long itemId = bookingRequest.getItemId();
-        Item item = itemStorage.findById(itemId).get();
-        if (item.getOwner().getId() == userId) {
-            throw new AccessException("Владелец вещи не может её забронировать сам у себя!");
+    public Booking setApproved(long userId, long bookingId, boolean approved) {
+        Booking booking = bookingStorage.findById(bookingId)
+                .orElseThrow(() -> new BookingNotFoundException("Бронирование с таким id не найдено!"));
+        if (booking.getStatus().equals(Status.APPROVED)) {
+            throw new IllegalArgumentException("Booking is already approved!");
         }
-        if (!item.getAvailable()) {
-            throw new ItemIsNotAvailableException("Вещь уже занята!");
+        if (userId == booking.getItem().getOwner().getId()) {
+            if (approved) {
+                booking.setStatus(Status.APPROVED);
+            } else {
+                booking.setStatus(Status.REJECTED);
+            }
+        } else {
+            throw new BookingNotFoundException("Неверный id пользователя!");
         }
-        booking.setStart(bookingRequest.getStart());
-        booking.setEnd(bookingRequest.getEnd());
-        booking.setItem(item);
-        booking.setBooker(user);
-        booking.setStatus(status);
         return bookingStorage.save(booking);
     }
 
+
     @Override
-    public Booking setApproved(long bookingId, long userId, boolean isApproved) throws AccessDeniedException {
-        Booking booking = getBookingById(bookingId, userId);
-        isValidBooking(booking, userId);
-        booking.setStatus(isApproved ? Status.APPROVED : Status.REJECTED);
-        bookingStorage.save(booking);
-        return booking;
+    public Booking getBookingById(long userId, long bookingId) {
+        Booking booking = bookingStorage.findById(bookingId)
+                .orElseThrow(() -> new BookingNotFoundException("Бронирование с таким id не найдено!"));
+        if (booking.getBooker().getId() == userId || booking.getItem().getOwner().getId() == userId) {
+            return booking;
+        } else {
+            throw new BookingNotFoundException("Неверный id пользователя!");
+        }
     }
 
     @Override
-    public List<BookingDto> getAllForUser(long userId, String stringState)
-            throws NoSuchElementException, IllegalArgumentException, BookingUnsupportedTypeException {
-        User booker = userService.getUserById(userId);
-
-        State state;
-
+    public List<Booking> getAll(long userId, String state, Pageable pageable) {
+        userStorage.findById(userId).orElseThrow(() -> new UserNotFoundException("Пользователь с таким id не найден!"));
         try {
-            state = State.valueOf(stringState);
+            switch (State.valueOf(state)) {
+                case ALL:
+                    return bookingStorage.findByBookerIdOrderByStartDesc(userId, pageable);
+                case WAITING:
+                    return bookingStorage.findByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
+                case REJECTED:
+                    return bookingStorage.findByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
+                case PAST:
+                    return bookingStorage.findByBookerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
+                case CURRENT:
+                    return bookingStorage.findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now());
+                case FUTURE:
+                    return bookingStorage.findByBookerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
+                default:
+                    return new ArrayList<>();
+            }
         } catch (IllegalArgumentException e) {
-            throw new BookingUnsupportedTypeException("Unknown state: UNSUPPORTED_STATUS");
-        }
-
-        switch (state) {
-            case PAST:
-                return BookingMapper.toBookingDtos(bookingStorage.findAllByBookerAndEndIsBeforeOrderByStartDesc(booker,
-                        LocalDateTime.now()));
-            case FUTURE:
-                return BookingMapper.toBookingDtos(bookingStorage.findAllByBookerAndStartIsAfterOrderByStartDesc(booker,
-                        LocalDateTime.now()));
-            case WAITING:
-                return BookingMapper.toBookingDtos(bookingStorage.findAllByBookerAndStatusIsOrderByStartDesc(booker,
-                        Status.WAITING));
-            case REJECTED:
-                return BookingMapper.toBookingDtos(bookingStorage.findAllByBookerAndStatusIsOrderByStartDesc(booker,
-                        Status.REJECTED));
-            case CURRENT:
-                return BookingMapper.toBookingDtos(bookingStorage.getByCurrentStatus(booker.getId()));
-            default:
-                return BookingMapper.toBookingDtos(bookingStorage.findAllByBookerOrderByStartDesc(booker));
-
+            throw new IllegalArgumentException("Unknown state: " + state);
         }
     }
 
     @Override
-    public List<BookingDto> getBookingsByOwner(Long userId, String stringState) throws BookingUnsupportedTypeException {
-        User owner = userService.getUserById(userId);
-
-        State state;
-
+    public List<Booking> getAllBookingsByOwner(long userId, String state, Pageable pageable) {
+        userStorage.findById(userId).orElseThrow(() -> new UserNotFoundException("Пользователь с таким id не найден!"));
         try {
-            state = State.valueOf(stringState);
+            switch (State.valueOf(state)) {
+                case ALL:
+                    return bookingStorage.findByItemOwnerIdOrderByStartDesc(userId, pageable);
+                case WAITING:
+                    return bookingStorage.findByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
+                case REJECTED:
+                    return bookingStorage.findByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
+                case PAST:
+                    return bookingStorage.findByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
+                case CURRENT:
+                    return bookingStorage.findByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now());
+                case FUTURE:
+                    return bookingStorage.findByItemOwnerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
+                default:
+                    return new ArrayList<>();
+            }
         } catch (IllegalArgumentException e) {
-            throw new BookingUnsupportedTypeException("Unknown state: UNSUPPORTED_STATUS");
-        }
-
-        List<Booking> bookings = bookingStorage.findForOwner(owner.getId());
-
-        if (bookings.isEmpty()) {
-            throw new NoSuchElementException("У пользователя с таким ID нет ни одной брони.");
-        }
-
-        switch (state) {
-            case PAST:
-                bookings = bookingStorage.findForOwnerPast(owner.getId());
-                break;
-            case FUTURE:
-                bookings = bookingStorage.findForOwnerFuture(owner.getId());
-                break;
-            case WAITING:
-                bookings = bookingStorage.findForOwnerByStatus(owner.getId(), Status.WAITING.toString());
-                break;
-            case REJECTED:
-                bookings = bookingStorage.findForOwnerByStatus(owner.getId(), Status.REJECTED.toString());
-                break;
-            case CURRENT:
-                bookings = bookingStorage.findForOwnerCurrent(owner.getId());
-                break;
-        }
-
-        return BookingMapper.toBookingDtos(bookings);
-    }
-
-    @Override
-    public List<Booking> checkBookingsForItem(long itemId, long userId) {
-        User booker = userService.getUserById(userId);
-        return bookingStorage.findAllByBookerAndItemIdAndStatus(booker, itemId, Status.APPROVED);
-    }
-
-    private void isValidRequest(BookingRequest bookingRequest) throws IllegalArgumentException {
-        if (bookingRequest.getStart().isAfter(bookingRequest.getEnd())) {
-            throw new IllegalArgumentException("Время начала бронирования должно быть раньше времени окончания!");
-        }
-        if (bookingRequest.getEnd().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Время окончания бронирования не может быть в прошлом!");
-        }
-        if (bookingRequest.getStart().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Время начала бронирования не может быть в прошлом!");
-        }
-    }
-
-    private void isValidBooking(Booking booking, long userId)
-            throws AccessDeniedException, IllegalArgumentException {
-        if (booking.getItem().getOwner().getId() != userId) {
-            throw new AccessDeniedException("Бронирование может быть подтверждено только владельцем вещи!");
-        }
-        if (booking.getStatus() == Status.APPROVED) {
-            throw new IllegalArgumentException("Бронирование уже подтверждено!");
+            throw new IllegalArgumentException("Unknown state: " + state);
         }
     }
 }

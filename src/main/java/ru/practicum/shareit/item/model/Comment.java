@@ -6,25 +6,27 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "comments")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private long id;
-    @Column(name = "text")
+    @NotNull
+    @NotBlank
     private String text;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "item_id", referencedColumnName = "id")
     private Item item;
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "author_id", referencedColumnName = "id")
     private User author;
-    @Column(name = "created")
     private LocalDateTime created;
 }
