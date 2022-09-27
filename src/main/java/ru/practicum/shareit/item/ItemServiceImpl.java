@@ -1,5 +1,7 @@
 package ru.practicum.shareit.item;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingStorage;
@@ -24,6 +26,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class ItemServiceImpl implements ItemService {
+    private static final Logger log = LoggerFactory.getLogger(ItemServiceImpl.class);
+
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
     private final ItemRequestStorage itemRequestStorage;
@@ -66,6 +70,7 @@ public class ItemServiceImpl implements ItemService {
                     itemRequestStorage.findById(itemDto.getRequestId()).orElseThrow(() ->
                             new ItemRequestNotFoundException("Запрос вещи не найден"))));
         }
+        log.debug("Наименование вещи: {}", (ItemMapper.toItemDto(item, new ArrayList<>())).getName());
         return ItemMapper.toItemDto(item, new ArrayList<>());
     }
 
@@ -85,6 +90,7 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getAvailable() != null) {
             item.setAvailable(itemDto.getAvailable());
         }
+        log.debug("Название вещи: {}", ItemMapper.toItemDto(itemStorage.save(item), getCommentDtoList(itemId)).getName());
         return ItemMapper.toItemDto(itemStorage.save(item), getCommentDtoList(itemId));
     }
 

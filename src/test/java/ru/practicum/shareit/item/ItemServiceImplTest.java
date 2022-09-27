@@ -29,17 +29,17 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class ItemServiceImplTest {
     @Mock
-    ItemStorage itemStorage;
+    private ItemStorage itemStorage;
     @Mock
-    UserStorage userStorage;
+    private UserStorage userStorage;
     @Mock
-    ItemRequestStorage itemRequestStorage;
+    private ItemRequestStorage itemRequestStorage;
     @Mock
-    BookingStorage bookingStorage;
+    private BookingStorage bookingStorage;
     @Mock
-    CommentStorage commentStorage;
+    private CommentStorage commentStorage;
     @InjectMocks
-    ItemServiceImpl itemService;
+    private ItemServiceImpl itemService;
 
     User user = new User(1, "testName", "testEmail@yandex.ru");
     User userBooker = new User(2, "testBookerName", "testBookerEmail@yandex.ru");

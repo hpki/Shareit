@@ -31,15 +31,16 @@ public class BookingServiceImpl implements BookingService {
     public Booking addBooking(long userId, BookingDto bookingDto) {
         Item item = itemStorage.findById(bookingDto.getItemId())
                 .orElseThrow(() -> new ItemNotFoundException("Вещь с таким id не найдена!"));
-        if (!item.isAvailable()) {
+        if (!isValidate(item)) {
             throw new ItemNotAvailableException("Вещь недоступна для бронирования!");
         }
         User user = userStorage.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с таким id не найден!"));
-        if (user.equals(item.getOwner())) {
+        if (isEquals(user, item)) {
             throw new UserNotFoundException("Владелец вещи не может её забронировать!");
         }
-        if (bookingDto.getStart().isBefore(LocalDateTime.now()) || bookingDto.getEnd().isBefore(bookingDto.getStart())) {
+        if (bookingDto.getStart().isBefore(LocalDateTime.now()) ||
+                bookingDto.getEnd().isBefore(bookingDto.getStart())) {
             throw new WrongTimeException("Неверное время старта и/или конца бронирования!");
         }
         Booking booking = bookingStorage.save(
@@ -98,7 +99,8 @@ public class BookingServiceImpl implements BookingService {
                 case PAST:
                     return bookingStorage.findByBookerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
                 case CURRENT:
-                    return bookingStorage.findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now());
+                    return bookingStorage.findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
+                            LocalDateTime.now(), LocalDateTime.now());
                 case FUTURE:
                     return bookingStorage.findByBookerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
                 default:
@@ -123,7 +125,8 @@ public class BookingServiceImpl implements BookingService {
                 case PAST:
                     return bookingStorage.findByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
                 case CURRENT:
-                    return bookingStorage.findByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now());
+                    return bookingStorage.findByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
+                            LocalDateTime.now(), LocalDateTime.now());
                 case FUTURE:
                     return bookingStorage.findByItemOwnerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
                 default:
@@ -133,4 +136,13 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalArgumentException("Unknown state: " + state);
         }
     }
+
+    private boolean isValidate(Item item) {
+        return item.isAvailable();
+    }
+
+    private boolean isEquals(User user, Item item) {
+        return user.equals(item.getOwner());
+    }
+
 }

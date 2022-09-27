@@ -17,10 +17,10 @@ import static org.mockito.Mockito.anyLong;
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
     @Mock
-    UserStorage userStorage;
+    private UserStorage userStorage;
 
     @InjectMocks
-    UserServiceImpl userService;
+    private UserServiceImpl userService;
 
     User user = new User(1, "testName", "testEmail@yandex.ru");
     User userUpdated = new User(1, "testNameUpdated", "testEmailUpdated@yandex.ru");

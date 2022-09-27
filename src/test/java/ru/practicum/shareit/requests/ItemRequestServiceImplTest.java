@@ -29,16 +29,16 @@ import static org.mockito.ArgumentMatchers.anyLong;
 @ExtendWith(MockitoExtension.class)
 public class ItemRequestServiceImplTest {
     @Mock
-    UserStorage userStorage;
+    private UserStorage userStorage;
 
     @Mock
-    ItemStorage itemStorage;
+    private ItemStorage itemStorage;
 
     @Mock
-    ItemRequestStorage itemRequestStorage;
+    private ItemRequestStorage itemRequestStorage;
 
     @InjectMocks
-    ItemRequestServiceImpl itemRequestService;
+    private ItemRequestServiceImpl itemRequestService;
 
     User user = new User(1, "testName", "testEmail@yandex.ru");
 

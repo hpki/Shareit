@@ -20,7 +20,7 @@ public class OffsetLimitPageable implements Pageable {
     }
 
     public static Pageable of(Integer from, Integer size) {
-        if (from == null && size == null) {
+        if (from == null || size == null) {
             from = 0;
             size = DEFAULT_PAGE_SIZE;
         }
@@ -43,7 +43,7 @@ public class OffsetLimitPageable implements Pageable {
         }
     }
 
-    public static int safeUnboxing(Integer value) {
+    private static int safeUnboxing(Integer value) {
         return Optional.ofNullable(value).orElse(0);
     }
 

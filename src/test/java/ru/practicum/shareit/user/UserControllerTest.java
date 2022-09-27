@@ -23,10 +23,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = UserController.class)
 public class UserControllerTest {
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @MockBean
-    UserService userService;
+    private UserService userService;
 
     @Autowired
     private MockMvc mvc;
@@ -53,7 +53,6 @@ public class UserControllerTest {
     void getUserById() throws Exception {
         when(userService.getUser(anyLong())).thenReturn(userDto);
         mvc.perform(get("/users/{userId}", String.valueOf(user.getId()))
-//                        .queryParam("userId", String.valueOf(user.getId()))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
