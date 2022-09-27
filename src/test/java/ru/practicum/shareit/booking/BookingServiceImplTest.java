@@ -41,7 +41,7 @@ public class BookingServiceImplTest {
     Booking booking = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, userBooker, Status.WAITING);
     Booking bookingWaiting = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, userBooker, Status.WAITING);
 
-    //для addBooking///////////////////////
+
     @Test
     void addBooking_when_save_and_addBooking() {
         Mockito.when(itemStorage.findById(anyLong())).thenReturn(Optional.of(item));
@@ -77,9 +77,6 @@ public class BookingServiceImplTest {
                 BookingMapper.toBookingDto(booking)));
     }
 
-    //////////////////////
-
-    // для editBooking
     @Test
     void editBooking_when_illegal_argument() {
         Booking bookingApproved = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
@@ -115,9 +112,8 @@ public class BookingServiceImplTest {
         Booking bookingApproved = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, userBooker, Status.APPROVED);
         Assertions.assertThrows(BookingNotFoundException.class, () -> bookingService.setApproved(userBooker.getId(), bookingApproved.getId(), true));
     }
-/////////////////////////////////////////
 
-    // для getBooking
+
     @Test
     void getBooking_when_userBooker() {
         Mockito.when(bookingStorage.findById(any())).thenReturn(Optional.of(booking));
@@ -135,9 +131,7 @@ public class BookingServiceImplTest {
         Mockito.when(bookingStorage.findById(any())).thenReturn(Optional.of(booking));
         Assertions.assertThrows(BookingNotFoundException.class, () -> bookingService.getBookingById(3, booking.getId()));
     }
-//////////////////////////////////////////////
 
-    // для getAllBookings
     @Test
     void getAllBookings_when_ALL() {
         Mockito.when(userStorage.findById(anyLong())).thenReturn(Optional.of(userBooker));
@@ -176,8 +170,8 @@ public class BookingServiceImplTest {
     @Test
     void getAllBookings_when_CURRENT() {
         Mockito.when(userStorage.findById(anyLong())).thenReturn(Optional.of(userBooker));
-        Mockito.when(bookingStorage.findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(anyLong(), any(), any())).
-                thenReturn(List.of(booking));
+        Mockito.when(bookingStorage.findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(anyLong(), any(), any()))
+                .thenReturn(List.of(booking));
         Assertions.assertEquals(List.of(booking), bookingService.getAll(userOwner.getId(), "CURRENT",
                 PageRequest.of(1, 1)));
     }
@@ -196,9 +190,7 @@ public class BookingServiceImplTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> bookingService.getAll(userOwner.getId(),
                 "test", PageRequest.of(1, 1)));
     }
-/////////////////////////////////////////
 
-    // для getAllBookingsByOwner
     @Test
     void getAllBookingsByOwner_when_ALL() {
         Mockito.when(userStorage.findById(anyLong())).thenReturn(Optional.of(userOwner));
