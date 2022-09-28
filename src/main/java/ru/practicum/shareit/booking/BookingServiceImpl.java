@@ -31,14 +31,10 @@ public class BookingServiceImpl implements BookingService {
     public Booking addBooking(long userId, BookingDto bookingDto) {
         Item item = itemStorage.findById(bookingDto.getItemId())
                 .orElseThrow(() -> new ItemNotFoundException("Вещь с таким id не найдена!"));
-        if (!isValidate(item)) {
-            throw new ItemNotAvailableException("Вещь недоступна для бронирования!");
-        }
+        isNotValidate(item);
         User user = userStorage.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с таким id не найден!"));
-        if (isEquals(user, item)) {
-            throw new UserNotFoundException("Владелец вещи не может её забронировать!");
-        }
+        isEquals(user, item);
         if (bookingDto.getStart().isBefore(LocalDateTime.now()) ||
                 bookingDto.getEnd().isBefore(bookingDto.getStart())) {
             throw new WrongTimeException("Неверное время старта и/или конца бронирования!");
@@ -58,9 +54,7 @@ public class BookingServiceImpl implements BookingService {
     public Booking setApproved(long userId, long bookingId, boolean approved) {
         Booking booking = bookingStorage.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException("Бронирование с таким id не найдено!"));
-        if (booking.getStatus().equals(Status.APPROVED)) {
-            throw new IllegalArgumentException("Booking is already approved!");
-        }
+        isEqualsStatus(booking);
         if (userId == booking.getItem().getOwner().getId()) {
             if (approved) {
                 booking.setStatus(Status.APPROVED);
@@ -137,12 +131,22 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private boolean isValidate(Item item) {
-        return item.isAvailable();
+    private void isNotValidate(Item item) {
+        if (!item.isAvailable()) {
+            throw new ItemNotAvailableException("Вещь недоступна для бронирования!");
+        }
     }
 
-    private boolean isEquals(User user, Item item) {
-        return user.equals(item.getOwner());
+    private void isEquals(User user, Item item) {
+        if (user.equals(item.getOwner())) {
+            throw new UserNotFoundException("Владелец вещи не может её забронировать!");
+        }
     }
 
+    private void isEqualsStatus(Booking booking) {
+        if (booking.getStatus().equals(Status.APPROVED)) {
+            throw new IllegalArgumentException("Booking is already approved!");
+        }
+    }
 }
+

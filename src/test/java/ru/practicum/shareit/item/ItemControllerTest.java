@@ -37,13 +37,13 @@ public class ItemControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    User userOwner = new User(1, "testOwnerName", "testOwnerEmail@yandex.ru");
-    User userCommentator = new User(2, "testCommentatorName", "testCommentatorEmail@yandex.ru");
-    Item item = new Item(1, "testName", "testDescription", true, userOwner, null);
-    Comment comment = new Comment(1, "testText", item, userCommentator, LocalDateTime.of(2020, Month.APRIL, 2, 12, 12, 12));
-    CommentDto commentDto = CommentMapper.toCommentDto(comment);
-    ItemDto itemDto = ItemMapper.toItemDto(item, List.of(commentDto));
-    ItemWithBookingDto itemWithBookingDto = ItemMapper.toItemWithBookingDto(item, null, null, List.of(commentDto));
+    private User userOwner = new User(1, "testOwnerName", "testOwnerEmail@yandex.ru");
+    private User userCommentator = new User(2, "testCommentatorName", "testCommentatorEmail@yandex.ru");
+    private Item item = new Item(1, "testName", "testDescription", true, userOwner, null);
+    private Comment comment = new Comment(1, "testText", item, userCommentator, LocalDateTime.of(2020, Month.APRIL, 2, 12, 12, 12));
+    private CommentDto commentDto = CommentMapper.toCommentDto(comment);
+    private ItemDto itemDto = ItemMapper.toItemDto(item, List.of(commentDto));
+    private ItemWithBookingDto itemWithBookingDto = ItemMapper.toItemWithBookingDto(item, null, null, List.of(commentDto));
 
     @Test
     void addItem() throws Exception {

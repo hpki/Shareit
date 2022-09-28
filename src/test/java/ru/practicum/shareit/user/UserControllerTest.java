@@ -31,10 +31,9 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    User user = new User(1, "testName", "testEmail@yandex.ru");
+    private User user = new User(1, "testName", "testEmail@yandex.ru");
 
-
-    UserDto userDto = UserMapper.toUserDto(user);
+    private UserDto userDto = UserMapper.toUserDto(user);
 
     @Test
     void getAllUsers() throws Exception {

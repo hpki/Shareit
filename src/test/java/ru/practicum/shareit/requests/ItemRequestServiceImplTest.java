@@ -40,10 +40,10 @@ public class ItemRequestServiceImplTest {
     @InjectMocks
     private ItemRequestServiceImpl itemRequestService;
 
-    User user = new User(1, "testName", "testEmail@yandex.ru");
+    private User user = new User(1, "testName", "testEmail@yandex.ru");
 
-    ItemRequest itemRequest = new ItemRequest(1, "testDescription", user, LocalDateTime.now());
-    Item item = new Item(1, "testName", "testDescription", true, user, null);
+    private ItemRequest itemRequest = new ItemRequest(1, "testDescription", user, LocalDateTime.now());
+    private Item item = new Item(1, "testName", "testDescription", true, user, null);
 
     @Test
     void addItemRequest() {

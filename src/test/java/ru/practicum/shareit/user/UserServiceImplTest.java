@@ -22,8 +22,8 @@ public class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    User user = new User(1, "testName", "testEmail@yandex.ru");
-    User userUpdated = new User(1, "testNameUpdated", "testEmailUpdated@yandex.ru");
+    private User user = new User(1, "testName", "testEmail@yandex.ru");
+    private User userUpdated = new User(1, "testNameUpdated", "testEmailUpdated@yandex.ru");
 
     @Test
     void getAllUsers() {

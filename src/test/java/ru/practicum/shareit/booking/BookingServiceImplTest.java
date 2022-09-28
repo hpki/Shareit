@@ -35,11 +35,11 @@ public class BookingServiceImplTest {
     @InjectMocks
     private BookingServiceImpl bookingService;
 
-    User userOwner = new User(1, "testOwnerName", "testOwnerEmail@yandex.ru");
-    User userBooker = new User(2, "testBookerName", "testBookerEmail@yandex.ru");
-    Item item = new Item(1, "testName", "testDescription", true, userOwner, null);
-    Booking booking = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, userBooker, Status.WAITING);
-    Booking bookingWaiting = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, userBooker, Status.WAITING);
+    private User userOwner = new User(1, "testOwnerName", "testOwnerEmail@yandex.ru");
+    private User userBooker = new User(2, "testBookerName", "testBookerEmail@yandex.ru");
+    private Item item = new Item(1, "testName", "testDescription", true, userOwner, null);
+    private Booking booking = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, userBooker, Status.WAITING);
+    private Booking bookingWaiting = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, userBooker, Status.WAITING);
 
 
     @Test
