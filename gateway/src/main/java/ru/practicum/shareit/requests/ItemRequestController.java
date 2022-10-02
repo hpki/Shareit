@@ -19,9 +19,9 @@ public class ItemRequestController {
     private final ItemRequestClient itemRequestClient;
 
     @PostMapping
-    public ResponseEntity<Object> saveNewRequest(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> addRequest(@RequestHeader("X-Sharer-User-Id") long userId,
                                                  @RequestBody @Valid ItemRequestDto itemRequestDto) {
-        return itemRequestClient.saveNewRequest(userId, itemRequestDto);
+        return itemRequestClient.addRequest(userId, itemRequestDto);
     }
 
     @GetMapping

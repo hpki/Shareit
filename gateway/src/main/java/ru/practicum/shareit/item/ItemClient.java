@@ -27,11 +27,11 @@ public class ItemClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> saveNewItem(long userId, ItemDto itemDto) {
+    public ResponseEntity<Object> addItem(long userId, ItemDto itemDto) {
         return post("", userId, itemDto);
     }
 
-    public ResponseEntity<Object> updateExistingItem(long userId, long itemId, ItemDto itemDto) {
+    public ResponseEntity<Object> editItem(long userId, long itemId, ItemDto itemDto) {
         return patch("/" + itemId, userId, itemDto);
     }
 
@@ -43,14 +43,14 @@ public class ItemClient extends BaseClient {
         return get("", userId);
     }
 
-    public ResponseEntity<Object> searchForItems(String text) {
+    public ResponseEntity<Object> search(String text) {
         Map<String, Object> parameters = Map.of(
                 "text", text
         );
         return get("/search?text={text}", 0L, parameters);
     }
 
-    public ResponseEntity<Object> saveNewComment(long userId, long itemId, CommentDto commentDto) {
+    public ResponseEntity<Object> addComment(long userId, long itemId, CommentDto commentDto) {
         return post("/" + itemId + "/comment", userId, commentDto);
     }
 }

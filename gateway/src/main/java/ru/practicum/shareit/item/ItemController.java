@@ -21,16 +21,16 @@ public class ItemController {
     private final ItemClient itemClient;
 
     @PostMapping
-    public ResponseEntity<Object> saveNewItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> addItem(@RequestHeader("X-Sharer-User-Id") long userId,
                                               @RequestBody @Valid ItemDto itemDto) {
-        return itemClient.saveNewItem(userId, itemDto);
+        return itemClient.addItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity<Object> updateExistingItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> editItem(@RequestHeader("X-Sharer-User-Id") long userId,
                                                      @PathVariable long itemId,
                                                      @RequestBody ItemDto itemDto) {
-        return itemClient.updateExistingItem(userId, itemId, itemDto);
+        return itemClient.editItem(userId, itemId, itemDto);
     }
 
     @GetMapping("/{itemId}")
@@ -46,12 +46,12 @@ public class ItemController {
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchForItems(@RequestParam String text) {
-        return itemClient.searchForItems(text);
+        return itemClient.search(text);
     }
 
     @PostMapping("/{itemId}/comment")
-    public ResponseEntity<Object> saveNewComment(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> addComment(@RequestHeader("X-Sharer-User-Id") long userId,
                                                  @PathVariable long itemId, @RequestBody @Valid CommentDto commentDto) {
-        return itemClient.saveNewComment(userId, itemId, commentDto);
+        return itemClient.addComment(userId, itemId, commentDto);
     }
 }

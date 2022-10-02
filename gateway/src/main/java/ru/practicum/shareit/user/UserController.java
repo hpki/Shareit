@@ -31,14 +31,14 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> saveNewUser(@RequestBody @Valid UserDto userDto) {
-        return userClient.saveNewUser(userDto);
+    public ResponseEntity<Object> addUser(@RequestBody @Valid UserDto userDto) {
+        return userClient.addUser(userDto);
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> updateExistingUser(@PathVariable long userId,
+    public ResponseEntity<Object> editUser(@PathVariable long userId,
                                                      @RequestBody @Validated(UserUpdate.class) UserDto userDto) {
-        return userClient.updateExistingUser(userId, userDto);
+        return userClient.editUser(userId, userDto);
     }
 
     @DeleteMapping("/{userId}")

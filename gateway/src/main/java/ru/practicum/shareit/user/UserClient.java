@@ -32,11 +32,11 @@ public class UserClient extends BaseClient {
         return get("/" + userId, userId);
     }
 
-    public ResponseEntity<Object> saveNewUser(UserDto userDto) {
+    public ResponseEntity<Object> addUser(UserDto userDto) {
         return post("", userDto);
     }
 
-    public ResponseEntity<Object> updateExistingUser(long userId, UserDto userDto) {
+    public ResponseEntity<Object> editUser(long userId, UserDto userDto) {
         return patch("/" + userId, userId, userDto);
     }
 
