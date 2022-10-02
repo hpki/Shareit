@@ -21,10 +21,10 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @NotNull
-    @Column(name = "starttime")
+    @Column(name = "start_time")
     private LocalDateTime start;
     @NotNull
-    @Column(name = "endtime")
+    @Column(name = "end_time")
     private LocalDateTime end;
     @NotNull
     @ManyToOne(cascade = CascadeType.MERGE)

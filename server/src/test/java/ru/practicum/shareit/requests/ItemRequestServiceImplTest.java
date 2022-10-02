@@ -12,11 +12,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
-import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
 import ru.practicum.shareit.requests.model.ItemRequest;
-import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -30,13 +30,13 @@ import static org.mockito.ArgumentMatchers.anyLong;
 @ExtendWith(MockitoExtension.class)
 public class ItemRequestServiceImplTest {
     @Mock
-    UserRepository userRepository;
+    UserStorage userStorage;
 
     @Mock
-    ItemRepository itemRepository;
+    ItemStorage itemStorage;
 
     @Mock
-    ItemRequestRepository itemRequestRepository;
+    ItemRequestStorage itemRequestStorage;
 
     @InjectMocks
     ItemRequestServiceImpl itemRequestService;
@@ -47,34 +47,36 @@ public class ItemRequestServiceImplTest {
     Item item = new Item(1, "testName", "testDescription", true, user, null);
 
     @Test
-    void createItemRequest() {
-        Mockito.when(itemRequestRepository.save(any())).thenReturn(itemRequest);
-        Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        Assertions.assertEquals(ItemRequestMapper.toItemRequestDto(itemRequest), itemRequestService.createItemRequest(user.getId(), ItemRequestMapper.toItemRequestDto(itemRequest)));
+    void addRequest() {
+        Mockito.when(itemRequestStorage.save(any())).thenReturn(itemRequest);
+        Mockito.when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
+        Assertions.assertEquals(ItemRequestMapper.toItemRequestDto(itemRequest),
+                itemRequestService.addRequest(user.getId(), ItemRequestMapper.toItemRequestDto(itemRequest)));
     }
 
     @Test
     void getItemRequestById() {
-        Mockito.when(userRepository.existsById(anyLong())).thenReturn(true);
-        Mockito.when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.of(itemRequest));
-        Mockito.when(itemRepository.findByRequestIdOrderByIdAsc(anyLong())).thenReturn(List.of(item));
+        Mockito.when(userStorage.existsById(anyLong())).thenReturn(true);
+        Mockito.when(itemRequestStorage.findById(anyLong())).thenReturn(Optional.of(itemRequest));
+        Mockito.when(itemStorage.findByRequestIdOrderByIdAsc(anyLong())).thenReturn(List.of(item));
         ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
         itemRequestDto.setItems(List.of(ItemMapper.toItemDto(item, new ArrayList<>())));
         Assertions.assertEquals(itemRequestDto, itemRequestService.getItemRequestById(user.getId(), itemRequest.getId()));
-        Mockito.when(userRepository.existsById(anyLong())).thenReturn(false);
-        Assertions.assertThrows(UserNotFoundException.class, () -> itemRequestService.getItemRequestById(user.getId(), itemRequest.getId()));
+        Mockito.when(userStorage.existsById(anyLong())).thenReturn(false);
+        Assertions.assertThrows(UserNotFoundException.class, () -> itemRequestService.getItemRequestById(user.getId(),
+                itemRequest.getId()));
 
     }
 
     @Test
     void getUserItemRequests() {
-        Mockito.when(userRepository.existsById(anyLong())).thenReturn(true);
-        Mockito.when(itemRequestRepository.findAll()).thenReturn(List.of(itemRequest));
-        Mockito.when(itemRepository.findByRequestIdOrderByIdAsc(anyLong())).thenReturn(List.of(item));
+        Mockito.when(userStorage.existsById(anyLong())).thenReturn(true);
+        Mockito.when(itemRequestStorage.findAll()).thenReturn(List.of(itemRequest));
+        Mockito.when(itemStorage.findByRequestIdOrderByIdAsc(anyLong())).thenReturn(List.of(item));
         ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
         itemRequestDto.setItems(List.of(ItemMapper.toItemDto(item, new ArrayList<>())));
         Assertions.assertEquals(List.of(itemRequestDto), itemRequestService.getUserItemRequests(user.getId()));
-        Mockito.when(userRepository.existsById(anyLong())).thenReturn(false);
+        Mockito.when(userStorage.existsById(anyLong())).thenReturn(false);
         Assertions.assertThrows(UserNotFoundException.class, () -> itemRequestService.getUserItemRequests(user.getId()));
 
     }
@@ -83,8 +85,8 @@ public class ItemRequestServiceImplTest {
     @Test
     void getItemRequests() {
         Page<ItemRequest> page = new PageImpl<>(List.of(itemRequest));
-        Mockito.when(itemRequestRepository.findAllByRequestorIdIsNot(anyLong(), any())).thenReturn(page);
-        Mockito.when(itemRepository.findByRequestIdOrderByIdAsc(itemRequest.getId())).thenReturn(List.of(item));
+        Mockito.when(itemRequestStorage.findAllByRequestorIdIsNot(anyLong(), any())).thenReturn(page);
+        Mockito.when(itemStorage.findByRequestIdOrderByIdAsc(itemRequest.getId())).thenReturn(List.of(item));
         ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
         itemRequestDto.setItems(List.of(ItemMapper.toItemDto(item, new ArrayList<>())));
         Assertions.assertEquals(List.of(itemRequestDto), itemRequestService.getItemRequests(user.getId(), PageRequest.of(1, 1)));

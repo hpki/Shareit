@@ -64,8 +64,8 @@ public class UserControllerTest {
     }
 
     @Test
-    void saveNewUser() throws Exception {
-        when(userService.createUser(any())).thenReturn(userDto);
+    void addUser() throws Exception {
+        when(userService.addUser(any())).thenReturn(userDto);
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -79,8 +79,8 @@ public class UserControllerTest {
     }
 
     @Test
-    void updateExistingUser() throws Exception {
-        when(userService.updateUser(anyLong(), any())).thenReturn(userDto);
+    void editUser() throws Exception {
+        when(userService.editUser(anyLong(), any())).thenReturn(userDto);
         mvc.perform(patch("/users/{userId}", String.valueOf(user.getId()))
                         .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -93,7 +93,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void deleteExistingUser() throws Exception {
+    void deleteUser() throws Exception {
         mvc.perform(delete("/users/{userId}", String.valueOf(user.getId()))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)

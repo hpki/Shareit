@@ -16,7 +16,7 @@ public class ErrorHandler {
         );
     }
 
-    @ExceptionHandler({ItemNotAvailableException.class, WrongStartOrEndTimeException.class, IllegalArgumentException.class})
+    @ExceptionHandler({ItemNotAvailableException.class, WrongTimeException.class, IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleNotAvailableException(final RuntimeException e) {
         return new ErrorResponse(

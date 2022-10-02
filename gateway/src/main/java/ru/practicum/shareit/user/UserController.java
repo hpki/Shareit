@@ -43,7 +43,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteExistingUser(@PathVariable long userId) {
-        userClient.deleteExistingUser(userId);
+    public void deleteUser(@PathVariable long userId) {
+        userClient.deleteUser(userId);
     }
 }

@@ -5,10 +5,10 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ItemRequestNotFoundException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
-import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
 import ru.practicum.shareit.requests.model.ItemRequest;
-import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.UserStorage;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,26 +17,29 @@ import java.util.stream.Collectors;
 
 @Service
 public class ItemRequestServiceImpl implements ItemRequestService {
-    private final UserRepository userRepository;
-    private final ItemRepository itemRepository;
-    private final ItemRequestRepository itemRequestRepository;
+    private final UserStorage userStorage;
+    private final ItemStorage itemStorage;
+    private final ItemRequestStorage itemRequestStorage;
 
-    public ItemRequestServiceImpl(UserRepository userRepository, ItemRepository itemRepository, ItemRequestRepository itemRequestRepository) {
-        this.userRepository = userRepository;
-        this.itemRepository = itemRepository;
-        this.itemRequestRepository = itemRequestRepository;
+    public ItemRequestServiceImpl(UserStorage userStorage, ItemStorage itemStorage,
+                                  ItemRequestStorage itemRequestStorage) {
+        this.userStorage = userStorage;
+        this.itemStorage = itemStorage;
+        this.itemRequestStorage = itemRequestStorage;
     }
 
-    public ItemRequestDto createItemRequest(long userId, ItemRequestDto itemRequestDto) {
-        ItemRequest itemRequest = itemRequestRepository.save(ItemRequestMapper.toItemRequest(userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Пользователь с таким id не найден!")), itemRequestDto));
+    public ItemRequestDto addRequest(long userId, ItemRequestDto itemRequestDto) {
+        ItemRequest itemRequest = itemRequestStorage.save(ItemRequestMapper.toItemRequest(userStorage
+                .findById(userId).orElseThrow(() -> new UserNotFoundException("Пользователь с таким id не найден!")),
+                itemRequestDto));
         return ItemRequestMapper.toItemRequestDto(itemRequest);
     }
 
     public ItemRequestDto getItemRequestById(long userId, long requestId) {
-        if (userRepository.existsById(userId)) {
-            ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequestRepository.findById(requestId)
+        if (userStorage.existsById(userId)) {
+            ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequestStorage.findById(requestId)
                     .orElseThrow(() -> new ItemRequestNotFoundException("Запрос вещи с таким id не найден!")));
-            itemRequestDto.setItems(itemRepository.findByRequestIdOrderByIdAsc(itemRequestDto.getId()).stream()
+            itemRequestDto.setItems(itemStorage.findByRequestIdOrderByIdAsc(itemRequestDto.getId()).stream()
                     .map(x -> ItemMapper.toItemDto(x, new ArrayList<>()))
                     .collect(Collectors.toList()));
             return itemRequestDto;
@@ -46,12 +49,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     public List<ItemRequestDto> getUserItemRequests(long userId) {
-        if (userRepository.existsById(userId)) {
-            return itemRequestRepository.findAll().stream()
+        if (userStorage.existsById(userId)) {
+            return itemRequestStorage.findAll().stream()
                     .filter(x -> x.getRequestor().getId() == userId)
                     .map(ItemRequestMapper::toItemRequestDto)
                     .peek(x -> x.setItems(
-                            itemRepository.findByRequestIdOrderByIdAsc(x.getId()).stream()
+                            itemStorage.findByRequestIdOrderByIdAsc(x.getId()).stream()
                                     .map(y -> ItemMapper.toItemDto(y, new ArrayList<>()))
                                     .collect(Collectors.toList())))
                     .sorted(Comparator.comparing(ItemRequestDto::getCreated))
@@ -62,10 +65,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     public List<ItemRequestDto> getItemRequests(long userId, Pageable pageable) {
-        return itemRequestRepository.findAllByRequestorIdIsNot(userId, pageable).getContent().stream()
+        return itemRequestStorage.findAllByRequestorIdIsNot(userId, pageable).getContent().stream()
                 .map(ItemRequestMapper::toItemRequestDto)
                 .peek(x -> x.setItems(
-                        itemRepository.findByRequestIdOrderByIdAsc(x.getId()).stream()
+                        itemStorage.findByRequestIdOrderByIdAsc(x.getId()).stream()
                                 .map(y -> ItemMapper.toItemDto(y, new ArrayList<>()))
                                 .collect(Collectors.toList())
                 ))

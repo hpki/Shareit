@@ -40,8 +40,8 @@ public class ItemRequestControllerTest {
 
 
     @Test
-    void saveNewRequest() throws Exception {
-        when(itemRequestService.createItemRequest(anyLong(), any())).thenReturn(itemRequestDto);
+    void addRequest() throws Exception {
+        when(itemRequestService.addRequest(anyLong(), any())).thenReturn(itemRequestDto);
         mvc.perform(post("/requests")
                         .content(mapper.writeValueAsString(itemRequestDto))
                         .characterEncoding(StandardCharsets.UTF_8)

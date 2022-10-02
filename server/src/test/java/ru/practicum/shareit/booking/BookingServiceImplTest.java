@@ -13,10 +13,10 @@ import ru.practicum.shareit.enums.Status;
 import ru.practicum.shareit.exception.BookingNotFoundException;
 import ru.practicum.shareit.exception.ItemNotAvailableException;
 import ru.practicum.shareit.exception.UserNotFoundException;
-import ru.practicum.shareit.exception.WrongStartOrEndTimeException;
-import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.exception.WrongTimeException;
+import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -29,11 +29,11 @@ import static org.mockito.ArgumentMatchers.anyLong;
 @ExtendWith(MockitoExtension.class)
 public class BookingServiceImplTest {
     @Mock
-    BookingRepository bookingRepository;
+    BookingStorage bookingRepository;
     @Mock
-    ItemRepository itemRepository;
+    ItemStorage itemRepository;
     @Mock
-    UserRepository userRepository;
+    UserStorage userRepository;
     @InjectMocks
     BookingServiceImpl bookingService;
 
@@ -53,7 +53,7 @@ public class BookingServiceImplTest {
         Assertions.assertThrows(ItemNotAvailableException.class, () -> bookingService.createBooking(userBooker.getId(), BookingMapper.toBookingDto(booking)));
         item.setAvailable(true);
         Booking bookingWrong = new Booking(1, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(2), item, userBooker, Status.WAITING);
-        Assertions.assertThrows(WrongStartOrEndTimeException.class, () -> bookingService.createBooking(userBooker.getId(), BookingMapper.toBookingDto(bookingWrong)));
+        Assertions.assertThrows(WrongTimeException.class, () -> bookingService.createBooking(userBooker.getId(), BookingMapper.toBookingDto(bookingWrong)));
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOwner));
         Assertions.assertThrows(UserNotFoundException.class, () -> bookingService.createBooking(userOwner.getId(), BookingMapper.toBookingDto(booking)));
 

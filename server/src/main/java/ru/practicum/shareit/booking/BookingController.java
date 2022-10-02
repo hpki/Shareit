@@ -16,16 +16,16 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public Booking saveNewBooking(@RequestHeader("X-Sharer-User-Id") long userId,
+    public Booking addBooking(@RequestHeader("X-Sharer-User-Id") long userId,
                                   @RequestBody @Valid BookingDto bookingDto) {
-        return bookingService.createBooking(userId, bookingDto);
+        return bookingService.addBooking(userId, bookingDto);
     }
 
     @PatchMapping("/{bookingId}")
-    public Booking updateExistingBooking(@RequestHeader("X-Sharer-User-Id") long userId,
+    public Booking editBooking(@RequestHeader("X-Sharer-User-Id") long userId,
                                          @PathVariable long bookingId,
                                          @RequestParam boolean approved) {
-        return bookingService.updateBooking(userId, bookingId, approved);
+        return bookingService.editBooking(userId, bookingId, approved);
     }
 
     @GetMapping("/{bookingId}")
@@ -43,10 +43,10 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public List<Booking> getAllBookingsForOwner(@RequestHeader("X-Sharer-User-Id") long userId,
+    public List<Booking> getAllBookingsByOwner(@RequestHeader("X-Sharer-User-Id") long userId,
                                                 @RequestParam(required = false, defaultValue = "ALL") String state,
                                                 @RequestParam(required = false, defaultValue = "0") long from,
                                                 @RequestParam(required = false, defaultValue = "20") long size) {
-        return bookingService.getAllBookingsForOwner(userId, state, OffsetLimitPageable.of((int) from, (int) size));
+        return bookingService.getAllBookingsByOwner(userId, state, OffsetLimitPageable.of((int) from, (int) size));
     }
 }

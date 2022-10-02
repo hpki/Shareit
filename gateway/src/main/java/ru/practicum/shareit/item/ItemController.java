@@ -21,7 +21,7 @@ public class ItemController {
     private final ItemClient itemClient;
 
     @PostMapping
-    public ResponseEntity<Object> addItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> saveNewItem(@RequestHeader("X-Sharer-User-Id") long userId,
                                               @RequestBody @Valid ItemDto itemDto) {
         return itemClient.addItem(userId, itemDto);
     }
@@ -46,7 +46,7 @@ public class ItemController {
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchForItems(@RequestParam String text) {
-        return itemClient.search(text);
+        return itemClient.searchForItems(text);
     }
 
     @PostMapping("/{itemId}/comment")

@@ -17,16 +17,16 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto saveNewItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") long userId,
                                @RequestBody @Valid ItemDto itemDto) {
-        return itemService.createItem(userId, itemDto);
+        return itemService.addItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateExistingItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemDto editItem(@RequestHeader("X-Sharer-User-Id") long userId,
                                       @PathVariable long itemId,
                                       @RequestBody ItemDto itemDto) {
-        return itemService.updateItem(userId, itemId, itemDto);
+        return itemService.editItem(userId, itemId, itemDto);
     }
 
     @GetMapping("/{itemId}")
@@ -46,8 +46,8 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto saveNewComment(@RequestHeader("X-Sharer-User-Id") long userId,
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
                                      @PathVariable long itemId, @RequestBody @Valid Comment comment) {
-        return itemService.createComment(userId, itemId, comment);
+        return itemService.addComment(userId, itemId, comment);
     }
 }

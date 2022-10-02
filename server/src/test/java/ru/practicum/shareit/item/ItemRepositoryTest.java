@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.equalTo;
 @DirtiesContext
 public class ItemRepositoryTest {
     private final TestEntityManager em;
-    private final ItemRepository itemRepository;
+    private final ItemStorage itemRepository;
 
     @Test
     void search() {

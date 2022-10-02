@@ -43,7 +43,7 @@ public class ItemClient extends BaseClient {
         return get("", userId);
     }
 
-    public ResponseEntity<Object> search(String text) {
+    public ResponseEntity<Object> searchForItems(String text) {
         Map<String, Object> parameters = Map.of(
                 "text", text
         );

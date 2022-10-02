@@ -26,18 +26,18 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto saveNewUser(@RequestBody @Valid UserDto userDto) {
-        return userService.createUser(userDto);
+    public UserDto addUser(@RequestBody @Valid UserDto userDto) {
+        return userService.addUser(userDto);
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateExistingUser(@PathVariable long userId,
+    public UserDto editUser(@PathVariable long userId,
                                       @RequestBody @Validated(UserUpdate.class) UserDto userDto) {
-        return userService.updateUser(userId, userDto);
+        return userService.editUser(userId, userDto);
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteExistingUser(@PathVariable long userId) {
+    public void deleteUser(@PathVariable long userId) {
         userService.deleteUser(userId);
     }
 }

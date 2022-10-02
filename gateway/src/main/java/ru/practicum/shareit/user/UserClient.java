@@ -40,7 +40,7 @@ public class UserClient extends BaseClient {
         return patch("/" + userId, userId, userDto);
     }
 
-    public ResponseEntity<Object> deleteExistingUser(long userId) {
+    public ResponseEntity<Object> deleteUser(long userId) {
         return delete("/" + userId, userId);
     }
 }

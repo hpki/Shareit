@@ -18,7 +18,7 @@ import static org.mockito.Mockito.anyLong;
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
     @Mock
-    UserRepository userRepository;
+    UserStorage userStorage;
 
     @InjectMocks
     UserServiceImpl userService;
@@ -28,32 +28,33 @@ public class UserServiceImplTest {
 
     @Test
     void getAllUsers() {
-        Mockito.when(userRepository.findAll()).thenReturn(List.of(user));
+        Mockito.when(userStorage.findAll()).thenReturn(List.of(user));
         Assertions.assertEquals(List.of(UserMapper.toUserDto(user)), userService.getAllUsers());
     }
 
     @Test
     void getUser() {
-        Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        Mockito.when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
         Assertions.assertEquals(UserMapper.toUserDto(user), userService.getUser(user.getId()));
     }
 
     @Test
     void createUser() {
-        Mockito.when(userRepository.save(any())).thenReturn(user);
-        Assertions.assertEquals(UserMapper.toUserDto(user), userService.createUser(UserMapper.toUserDto(user)));
+        Mockito.when(userStorage.save(any())).thenReturn(user);
+        Assertions.assertEquals(UserMapper.toUserDto(user), userService.addUser(UserMapper.toUserDto(user)));
     }
 
     @Test
     void updateUser() {
-        Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        Mockito.when(userRepository.save(any())).thenReturn(userUpdated);
-        Assertions.assertEquals(UserMapper.toUserDto(userUpdated), userService.updateUser(user.getId(), UserMapper.toUserDto(user)));
+        Mockito.when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
+        Mockito.when(userStorage.save(any())).thenReturn(userUpdated);
+        Assertions.assertEquals(UserMapper.toUserDto(userUpdated), userService.editUser(user.getId(),
+                UserMapper.toUserDto(user)));
     }
 
     @Test
     void deleteUser() {
         userService.deleteUser(user.getId());
-        Mockito.verify(userRepository, Mockito.times(1)).deleteById(user.getId());
+        Mockito.verify(userStorage, Mockito.times(1)).deleteById(user.getId());
     }
 }

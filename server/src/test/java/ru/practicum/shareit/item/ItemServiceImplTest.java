@@ -8,15 +8,15 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.BookingMapper;
-import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.BookingStorage;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.enums.Status;
 import ru.practicum.shareit.item.dto.ItemWithBookingDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.requests.ItemRequestRepository;
+import ru.practicum.shareit.requests.ItemRequestStorage;
 import ru.practicum.shareit.requests.model.ItemRequest;
-import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -29,15 +29,15 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class ItemServiceImplTest {
     @Mock
-    ItemRepository itemRepository;
+    ItemStorage itemStorage;
     @Mock
-    UserRepository userRepository;
+    UserStorage userStorage;
     @Mock
-    ItemRequestRepository itemRequestRepository;
+    ItemRequestStorage itemRequestStorage;
     @Mock
-    BookingRepository bookingRepository;
+    BookingStorage bookingStorage;
     @Mock
-    CommentRepository commentRepository;
+    CommentStorage commentStorage;
     @InjectMocks
     ItemServiceImpl itemService;
 
@@ -52,37 +52,40 @@ public class ItemServiceImplTest {
 
     @Test
     void getItem() {
-        Mockito.when(bookingRepository.findByItemIdOrderByStartDesc(anyLong()))
+        Mockito.when(bookingStorage.findByItemIdOrderByStartDesc(anyLong()))
                 .thenReturn(List.of(booking));
-        Mockito.when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        Mockito.when(itemStorage.findById(anyLong())).thenReturn(Optional.of(item));
         ItemWithBookingDto itemWithBookingDto = ItemMapper.toItemWithBookingDto(item, BookingMapper.toBookingDto(booking),
                 BookingMapper.toBookingDto(booking), new ArrayList<>());
         Assertions.assertEquals(itemWithBookingDto, itemService.getItem(user.getId(), item.getId()));
     }
 
     @Test
-    void createItem() {
-        Mockito.when(itemRepository.save(any())).thenReturn(item);
-        Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        Assertions.assertEquals(ItemMapper.toItemDto(item, new ArrayList<>()), itemService.createItem(user.getId(), ItemMapper.toItemDto(item, new ArrayList<>())));
-        Mockito.when(itemRepository.save(any())).thenReturn(itemWithRequest);
-        Mockito.when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.of(itemRequest));
-        Assertions.assertEquals(ItemMapper.toItemDto(itemWithRequest, new ArrayList<>()), itemService.createItem(user.getId(), ItemMapper.toItemDto(itemWithRequest, new ArrayList<>())));
+    void addItem() {
+        Mockito.when(itemStorage.save(any())).thenReturn(item);
+        Mockito.when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
+        Assertions.assertEquals(ItemMapper.toItemDto(item, new ArrayList<>()), itemService.addItem(user.getId(),
+                ItemMapper.toItemDto(item, new ArrayList<>())));
+        Mockito.when(itemStorage.save(any())).thenReturn(itemWithRequest);
+        Mockito.when(itemRequestStorage.findById(anyLong())).thenReturn(Optional.of(itemRequest));
+        Assertions.assertEquals(ItemMapper.toItemDto(itemWithRequest, new ArrayList<>()), itemService.addItem(user.getId(),
+                ItemMapper.toItemDto(itemWithRequest, new ArrayList<>())));
     }
 
     @Test
-    void updateItem() {
-        Mockito.when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-        Mockito.when(itemRepository.save(any())).thenReturn(itemUpdate);
-        Assertions.assertEquals(ItemMapper.toItemDto(itemUpdate, new ArrayList<>()), itemService.updateItem(user.getId(), item.getId(), ItemMapper.toItemDto(itemUpdate, new ArrayList<>())));
+    void editItem() {
+        Mockito.when(itemStorage.findById(anyLong())).thenReturn(Optional.of(item));
+        Mockito.when(itemStorage.save(any())).thenReturn(itemUpdate);
+        Assertions.assertEquals(ItemMapper.toItemDto(itemUpdate, new ArrayList<>()), itemService.editItem(user.getId(),
+                item.getId(), ItemMapper.toItemDto(itemUpdate, new ArrayList<>())));
     }
 
     @Test
     void getAllItems() {
-        Mockito.when(itemRepository.findAll()).thenReturn(List.of(item));
-        Mockito.when(bookingRepository.findByItemIdOrderByStartDesc(anyLong()))
+        Mockito.when(itemStorage.findAll()).thenReturn(List.of(item));
+        Mockito.when(bookingStorage.findByItemIdOrderByStartDesc(anyLong()))
                 .thenReturn(List.of(booking));
-        Mockito.when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        Mockito.when(itemStorage.findById(anyLong())).thenReturn(Optional.of(item));
         ItemWithBookingDto itemWithBookingDto = ItemMapper.toItemWithBookingDto(item, BookingMapper.toBookingDto(booking),
                 BookingMapper.toBookingDto(booking), new ArrayList<>());
         Assertions.assertEquals(List.of(itemWithBookingDto), itemService.getAllItems(user.getId()));
@@ -90,19 +93,19 @@ public class ItemServiceImplTest {
 
     @Test
     void search() {
-        Mockito.when(itemRepository.search(anyString())).thenReturn(List.of(item));
+        Mockito.when(itemStorage.search(anyString())).thenReturn(List.of(item));
         Assertions.assertEquals(List.of(ItemMapper.toItemDto(item, new ArrayList<>())), itemService.search("text"));
     }
 
     @Test
-    void createComment() {
-        Mockito.when(bookingRepository.findByBookerIdAndEndBeforeOrderByStartDesc(anyLong(), any())).thenReturn(List.of(booking));
-        Mockito.when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-        Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        Mockito.when(commentRepository.save(any())).thenReturn(comment);
-        Assertions.assertEquals(CommentMapper.toCommentDto(comment), itemService.createComment(user.getId(), item.getId(), comment));
-        Mockito.when(bookingRepository.findByBookerIdAndEndBeforeOrderByStartDesc(anyLong(), any())).thenReturn(List.of());
-        Assertions.assertThrows(IllegalArgumentException.class, () -> itemService.createComment(user.getId(), item.getId(), comment));
+    void addComment() {
+        Mockito.when(bookingStorage.findByBookerIdAndEndBeforeOrderByStartDesc(anyLong(), any())).thenReturn(List.of(booking));
+        Mockito.when(itemStorage.findById(anyLong())).thenReturn(Optional.of(item));
+        Mockito.when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
+        Mockito.when(commentStorage.save(any())).thenReturn(comment);
+        Assertions.assertEquals(CommentMapper.toCommentDto(comment), itemService.addComment(user.getId(), item.getId(), comment));
+        Mockito.when(bookingStorage.findByBookerIdAndEndBeforeOrderByStartDesc(anyLong(), any())).thenReturn(List.of());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> itemService.addComment(user.getId(), item.getId(), comment));
 
     }
 }
