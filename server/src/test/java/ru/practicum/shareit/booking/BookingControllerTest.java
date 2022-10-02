@@ -48,8 +48,8 @@ public class BookingControllerTest {
 
 
     @Test
-    void saveNewBooking() throws Exception {
-        when(bookingService.createBooking(anyLong(), any())).thenReturn(booking);
+    void addBooking() throws Exception {
+        when(bookingService.addBooking(anyLong(), any())).thenReturn(booking);
         mvc.perform(post("/bookings")
                         .content(mapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -66,8 +66,8 @@ public class BookingControllerTest {
     }
 
     @Test
-    void updateExistingBooking() throws Exception {
-        when(bookingService.updateBooking(anyLong(), anyLong(), anyBoolean())).thenReturn(bookingApproved);
+    void editBooking() throws Exception {
+        when(bookingService.editBooking(anyLong(), anyLong(), anyBoolean())).thenReturn(bookingApproved);
         mvc.perform(patch("/bookings/{bookingId}", String.valueOf(booking.getId()))
                         .param("approved", "true")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -118,8 +118,8 @@ public class BookingControllerTest {
     }
 
     @Test
-    void getAllBookingsForOwner() throws Exception {
-        when(bookingService.getAllBookingsForOwner(anyLong(), anyString(), any())).thenReturn(List.of(booking));
+    void getAllBookingsByOwner() throws Exception {
+        when(bookingService.getAllBookingsByOwner(anyLong(), anyString(), any())).thenReturn(List.of(booking));
         mvc.perform(get("/bookings/owner")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)

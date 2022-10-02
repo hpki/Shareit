@@ -46,8 +46,8 @@ public class ItemControllerTest {
     ItemWithBookingDto itemWithBookingDto = ItemMapper.toItemWithBookingDto(item, null, null, List.of(commentDto));
 
     @Test
-    void saveNewItem() throws Exception {
-        when(itemService.createItem(anyLong(), any())).thenReturn(itemDto);
+    void addItem() throws Exception {
+        when(itemService.addItem(anyLong(), any())).thenReturn(itemDto);
         mvc.perform(post("/items")
                         .content(mapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -67,8 +67,8 @@ public class ItemControllerTest {
     }
 
     @Test
-    void updateExistingItem() throws Exception {
-        when(itemService.updateItem(anyLong(), anyLong(), any())).thenReturn(itemDto);
+    void editItem() throws Exception {
+        when(itemService.editItem(anyLong(), anyLong(), any())).thenReturn(itemDto);
         mvc.perform(patch("/items/{itemId}", String.valueOf(item.getId()))
                         .content(mapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -150,8 +150,8 @@ public class ItemControllerTest {
     }
 
     @Test
-    void saveNewComment() throws Exception {
-        when(itemService.createComment(anyLong(), anyLong(), any())).thenReturn(commentDto);
+    void addComment() throws Exception {
+        when(itemService.addComment(anyLong(), anyLong(), any())).thenReturn(commentDto);
         mvc.perform(post("/items/{itemId}/comment", String.valueOf(item.getId()))
                         .header("X-Sharer-User-Id", 1)
                         .content(mapper.writeValueAsString(comment))

@@ -31,7 +31,7 @@ public class BookingServiceImplIntegrationTest {
     private final BookingServiceImpl bookingService;
 
     @Test
-    void createBooking() {
+    void addBooking() {
         em.createNativeQuery("insert into users (name, email) values (?,?)")
                 .setParameter(1, "userOwnerName")
                 .setParameter(2, "userOwnerEmail@mail.ru")
@@ -56,7 +56,7 @@ public class BookingServiceImplIntegrationTest {
                 userBooker,
                 Status.WAITING);
         BookingDto bookingDto = BookingMapper.toBookingDto(booking);
-        bookingService.createBooking(2, bookingDto);
+        bookingService.addBooking(2, bookingDto);
         TypedQuery<Booking> query = em.createQuery("select u from Booking u where u.booker = :booker", Booking.class);
         Booking bookingReturned = query.setParameter("booker", userBooker).getSingleResult();
         assertThat(bookingReturned, equalTo(booking));
