@@ -29,26 +29,26 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class ItemServiceImplTest {
     @Mock
-    ItemStorage itemStorage;
+    private ItemStorage itemStorage;
     @Mock
-    UserStorage userStorage;
+    private UserStorage userStorage;
     @Mock
-    ItemRequestStorage itemRequestStorage;
+    private ItemRequestStorage itemRequestStorage;
     @Mock
-    BookingStorage bookingStorage;
+    private BookingStorage bookingStorage;
     @Mock
-    CommentStorage commentStorage;
+    private CommentStorage commentStorage;
     @InjectMocks
-    ItemServiceImpl itemService;
+    private ItemServiceImpl itemService;
 
-    User user = new User(1, "testName", "testEmail@yandex.ru");
-    User userBooker = new User(2, "testBookerName", "testBookerEmail@yandex.ru");
-    ItemRequest itemRequest = new ItemRequest(1, "testDescription", user, LocalDateTime.now());
-    Item item = new Item(1, "testName", "testDescription", true, user, null);
-    Item itemWithRequest = new Item(2, "testName", "testDescription", true, user, itemRequest);
-    Item itemUpdate = new Item(1, "testUpdateName", "testUpdateDescription", false, user, null);
-    Booking booking = new Booking(1, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item, userBooker, Status.WAITING);
-    Comment comment = new Comment(1, "text", item, user, LocalDateTime.now());
+    private User user = new User(1, "testName", "testEmail@yandex.ru");
+    private User userBooker = new User(2, "testBookerName", "testBookerEmail@yandex.ru");
+    private ItemRequest itemRequest = new ItemRequest(1, "testDescription", user, LocalDateTime.now());
+    private Item item = new Item(1, "testName", "testDescription", true, user, null);
+    private Item itemWithRequest = new Item(2, "testName", "testDescription", true, user, itemRequest);
+    private Item itemUpdate = new Item(1, "testUpdateName", "testUpdateDescription", false, user, null);
+    private Booking booking = new Booking(1, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item, userBooker, Status.WAITING);
+    private Comment comment = new Comment(1, "text", item, user, LocalDateTime.now());
 
     @Test
     void getItem() {

@@ -34,14 +34,10 @@ public class BookingServiceImpl implements BookingService {
     public Booking addBooking(long userId, BookingDto bookingDto) {
         Item item = itemStorage.findById(bookingDto.getItemId())
                 .orElseThrow(() -> new ItemNotFoundException("Вещь с таким id не найдена!"));
-        if (!item.isAvailable()) {
-            throw new ItemNotAvailableException("Вещь недоступна для бронирования!");
-        }
+        isNotValidate(item);
         User user = userStorage.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с таким id не найден!"));
-        if (user.equals(item.getOwner())) {
-            throw new UserNotFoundException("Владелец вещи не может её забронировать!");
-        }
+        isEquals(user, item);
         if (bookingDto.getStart().isBefore(LocalDateTime.now()) || bookingDto.getEnd().isBefore(bookingDto.getStart())) {
             throw new WrongTimeException("Неверное время старта и/или конца бронирования!");
         }
@@ -60,9 +56,7 @@ public class BookingServiceImpl implements BookingService {
     public Booking editBooking(long userId, long bookingId, boolean approved) {
         Booking booking = bookingStorage.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException("Бронирование с таким id не найдено!"));
-        if (booking.getStatus().equals(Status.APPROVED)) {
-            throw new IllegalArgumentException("Booking is already approved!");
-        }
+        isEqualsStatus(booking);
         if (userId == booking.getItem().getOwner().getId()) {
             if (approved) {
                 booking.setStatus(Status.APPROVED);
@@ -101,7 +95,8 @@ public class BookingServiceImpl implements BookingService {
                 case PAST:
                     return bookingStorage.findByBookerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
                 case CURRENT:
-                    return bookingStorage.findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now());
+                    return bookingStorage.findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
+                            LocalDateTime.now(), LocalDateTime.now());
                 case FUTURE:
                     return bookingStorage.findByBookerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
                 default:
@@ -126,7 +121,8 @@ public class BookingServiceImpl implements BookingService {
                 case PAST:
                     return bookingStorage.findByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
                 case CURRENT:
-                    return bookingStorage.findByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now());
+                    return bookingStorage.findByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
+                            LocalDateTime.now(), LocalDateTime.now());
                 case FUTURE:
                     return bookingStorage.findByItemOwnerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
                 default:
@@ -134,6 +130,25 @@ public class BookingServiceImpl implements BookingService {
             }
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Unknown state: " + state);
+        }
+    }
+
+
+    private void isNotValidate(Item item) {
+        if (!item.isAvailable()) {
+            throw new ItemNotAvailableException("Вещь недоступна для бронирования!");
+        }
+    }
+
+    private void isEquals(User user, Item item) {
+        if (user.equals(item.getOwner())) {
+            throw new UserNotFoundException("Владелец вещи не может её забронировать!");
+        }
+    }
+
+    private void isEqualsStatus(Booking booking) {
+        if (booking.getStatus().equals(Status.APPROVED)) {
+            throw new IllegalArgumentException("Booking is already approved!");
         }
     }
 }

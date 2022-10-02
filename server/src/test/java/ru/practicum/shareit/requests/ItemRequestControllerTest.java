@@ -26,17 +26,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = ItemRequestController.class)
 public class ItemRequestControllerTest {
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @MockBean
-    ItemRequestService itemRequestService;
+    private ItemRequestService itemRequestService;
 
     @Autowired
     private MockMvc mvc;
 
-    User userRequestor = new User(1, "testRequestorName", "testRequestorEmail@yandex.ru");
-    ItemRequest itemRequest = new ItemRequest(1, "testDescription", userRequestor, LocalDateTime.of(2020, Month.APRIL, 2, 12, 12, 12));
-    ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
+    private User userRequestor = new User(1, "testRequestorName", "testRequestorEmail@yandex.ru");
+    private ItemRequest itemRequest = new ItemRequest(1, "testDescription", userRequestor, LocalDateTime.of(2020, Month.APRIL, 2, 12, 12, 12));
+    private ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
 
 
     @Test

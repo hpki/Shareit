@@ -30,21 +30,21 @@ import static org.mockito.ArgumentMatchers.anyLong;
 @ExtendWith(MockitoExtension.class)
 public class ItemRequestServiceImplTest {
     @Mock
-    UserStorage userStorage;
+    private UserStorage userStorage;
 
     @Mock
-    ItemStorage itemStorage;
+    private ItemStorage itemStorage;
 
     @Mock
-    ItemRequestStorage itemRequestStorage;
+    private ItemRequestStorage itemRequestStorage;
 
     @InjectMocks
-    ItemRequestServiceImpl itemRequestService;
+    private ItemRequestServiceImpl itemRequestService;
 
-    User user = new User(1, "testName", "testEmail@yandex.ru");
+    private User user = new User(1, "testName", "testEmail@yandex.ru");
 
-    ItemRequest itemRequest = new ItemRequest(1, "testDescription", user, LocalDateTime.now());
-    Item item = new Item(1, "testName", "testDescription", true, user, null);
+    private ItemRequest itemRequest = new ItemRequest(1, "testDescription", user, LocalDateTime.now());
+    private Item item = new Item(1, "testName", "testDescription", true, user, null);
 
     @Test
     void addRequest() {

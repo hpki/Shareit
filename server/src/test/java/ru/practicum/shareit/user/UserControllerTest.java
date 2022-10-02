@@ -24,18 +24,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = UserController.class)
 public class UserControllerTest {
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @MockBean
-    UserService userService;
+    private UserService userService;
 
     @Autowired
     private MockMvc mvc;
 
-    User user = new User(1, "testName", "testEmail@yandex.ru");
+    private User user = new User(1, "testName", "testEmail@yandex.ru");
 
-
-    UserDto userDto = UserMapper.toUserDto(user);
+    private UserDto userDto = UserMapper.toUserDto(user);
 
     @Test
     void getAllUsers() throws Exception {
