@@ -89,7 +89,8 @@ public class ItemRequestServiceImplTest {
         Mockito.when(itemStorage.findByRequestIdOrderByIdAsc(itemRequest.getId())).thenReturn(List.of(item));
         ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
         itemRequestDto.setItems(List.of(ItemMapper.toItemDto(item, new ArrayList<>())));
-        Assertions.assertEquals(List.of(itemRequestDto), itemRequestService.getItemRequests(user.getId(), PageRequest.of(1, 1)));
+        Assertions.assertEquals(List.of(itemRequestDto), itemRequestService.getItemRequests(user.getId(),
+                PageRequest.of(1, 1)));
 
     }
 }

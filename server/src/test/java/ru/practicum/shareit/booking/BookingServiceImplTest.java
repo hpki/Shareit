@@ -40,8 +40,10 @@ public class BookingServiceImplTest {
     private User userOwner = new User(1, "testOwnerName", "testOwnerEmail@yandex.ru");
     private User userBooker = new User(2, "testBookerName", "testBookerEmail@yandex.ru");
     private Item item = new Item(1, "testName", "testDescription", true, userOwner, null);
-    private Booking booking = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, userBooker, Status.WAITING);
-    private Booking bookingWaiting = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, userBooker, Status.WAITING);
+    private Booking booking = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item,
+            userBooker, Status.WAITING);
+    private Booking bookingWaiting = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
+            item, userBooker, Status.WAITING);
 
     @Test
     void addBooking_when_save_and_addBooking() {
@@ -99,19 +101,24 @@ public class BookingServiceImplTest {
 
     @Test
     void editBooking_when_reject_and_approved() {
-        Booking bookingApproved = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, userBooker, Status.APPROVED);
-        Booking bookingRejected = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, userBooker, Status.REJECTED);
+        Booking bookingApproved = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
+                item, userBooker, Status.APPROVED);
+        Booking bookingRejected = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
+                item, userBooker, Status.REJECTED);
         Mockito.when(bookingStorage.findById(any())).thenReturn(Optional.of(bookingWaiting));
         Mockito.when(bookingStorage.save(any())).thenReturn(bookingApproved);
         bookingWaiting.setStatus(Status.WAITING);
         Mockito.when(bookingStorage.save(any())).thenReturn(bookingRejected);
-        Assertions.assertEquals(bookingRejected, bookingService.editBooking(userOwner.getId(), bookingApproved.getId(), false));
+        Assertions.assertEquals(bookingRejected, bookingService.editBooking(userOwner.getId(),
+                bookingApproved.getId(), false));
     }
 
     @Test
     void editBooking_when_booking_not_found() {
-        Booking bookingApproved = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, userBooker, Status.APPROVED);
-        Assertions.assertThrows(BookingNotFoundException.class, () -> bookingService.editBooking(userBooker.getId(), bookingApproved.getId(), true));
+        Booking bookingApproved = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
+                item, userBooker, Status.APPROVED);
+        Assertions.assertThrows(BookingNotFoundException.class, () -> bookingService.editBooking(userBooker.getId(),
+                bookingApproved.getId(), true));
     }
 
     @Test

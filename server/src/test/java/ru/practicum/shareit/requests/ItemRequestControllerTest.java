@@ -35,7 +35,8 @@ public class ItemRequestControllerTest {
     private MockMvc mvc;
 
     private User userRequestor = new User(1, "testRequestorName", "testRequestorEmail@yandex.ru");
-    private ItemRequest itemRequest = new ItemRequest(1, "testDescription", userRequestor, LocalDateTime.of(2020, Month.APRIL, 2, 12, 12, 12));
+    private ItemRequest itemRequest = new ItemRequest(1, "testDescription", userRequestor,
+            LocalDateTime.of(2020, Month.APRIL, 2, 12, 12, 12));
     private ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
 
 

@@ -36,6 +36,7 @@ public class UserServiceImplIntegrationTest {
                 .executeUpdate();
         User userOwner = new User(1, "userOwnerName", "userOwnerEmail@mail.ru");
         User userBooker = new User(2, "userBookerName", "userBookerEmail@mail.ru");
-        assertThat(userService.getAllUsers(), equalTo(List.of(UserMapper.toUserDto(userOwner), UserMapper.toUserDto(userBooker))));
+        assertThat(userService.getAllUsers(), equalTo(List.of(UserMapper.toUserDto(userOwner),
+                UserMapper.toUserDto(userBooker))));
     }
 }

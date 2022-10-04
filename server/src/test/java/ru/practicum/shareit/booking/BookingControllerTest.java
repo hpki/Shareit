@@ -35,14 +35,14 @@ public class BookingControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    User userOwner = new User(1, "testOwnerName", "testOwnerEmail@yandex.ru");
-    User userBooker = new User(2, "testBookerName", "testBookerEmail@yandex.ru");
-    Item item = new Item(1, "testName", "testDescription", true, userOwner, null);
-    Booking booking = new Booking(1, LocalDateTime.of(2023, Month.APRIL, 2, 12, 12, 12),
+    private User userOwner = new User(1, "testOwnerName", "testOwnerEmail@yandex.ru");
+    private User userBooker = new User(2, "testBookerName", "testBookerEmail@yandex.ru");
+    private Item item = new Item(1, "testName", "testDescription", true, userOwner, null);
+    private Booking booking = new Booking(1, LocalDateTime.of(2023, Month.APRIL, 2, 12, 12, 12),
             LocalDateTime.of(2024, Month.APRIL, 2, 12, 12, 12), item, userBooker, Status.WAITING);
-    Booking bookingApproved = new Booking(1, LocalDateTime.of(2023, Month.APRIL, 2, 12, 12, 12),
+    private Booking bookingApproved = new Booking(1, LocalDateTime.of(2023, Month.APRIL, 2, 12, 12, 12),
             LocalDateTime.of(2024, Month.APRIL, 2, 12, 12, 12), item, userBooker, Status.APPROVED);
-    BookingDto bookingDto = new BookingDto(1, 1, 2,
+    private BookingDto bookingDto = new BookingDto(1, 1, 2,
             LocalDateTime.of(2023, Month.APRIL, 2, 12, 12, 12),
             LocalDateTime.of(2024, Month.APRIL, 2, 12, 12, 12));
 
