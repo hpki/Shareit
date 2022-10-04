@@ -1,8 +1,6 @@
 package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingStorage;
@@ -56,7 +54,7 @@ public class ItemServiceImpl implements ItemService {
             }
         }
         return ItemMapper.toItemWithBookingDto(itemStorage.findById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException("Вещь с таким id не найдена!")), nextBooking, lastBooking,
+                        .orElseThrow(() -> new ItemNotFoundException("Вещь с таким id не найдена!")), nextBooking, lastBooking,
                 getCommentDtoList(itemId));
     }
 
