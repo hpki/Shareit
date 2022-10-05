@@ -5,8 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.pageable.OffsetLimitPageable;
-
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,7 +15,7 @@ public class BookingController {
 
     @PostMapping
     public Booking addBooking(@RequestHeader("X-Sharer-User-Id") long userId,
-                                  @RequestBody @Valid BookingDto bookingDto) {
+                                  @RequestBody BookingDto bookingDto) {
         return bookingService.addBooking(userId, bookingDto);
     }
 

@@ -12,7 +12,6 @@ import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.model.User;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +48,7 @@ public class BookingServiceImpl implements BookingService {
                         user,
                         Status.WAITING)
         );
+        log.info("The item with the id {} is created", booking.getId());
         return booking;
     }
 
@@ -66,6 +66,7 @@ public class BookingServiceImpl implements BookingService {
         } else {
             throw new BookingNotFoundException("Неверный id пользователя!");
         }
+        log.info("Edited items with id {}", bookingStorage.save(booking).getId());
         return bookingStorage.save(booking);
     }
 
@@ -75,6 +76,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingStorage.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException("Бронирование с таким id не найдено!"));
         if (booking.getBooker().getId() == userId || booking.getItem().getOwner().getId() == userId) {
+            log.info("Found booking with id {}", booking.getId());
             return booking;
         } else {
             throw new BookingNotFoundException("Неверный id пользователя!");
