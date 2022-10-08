@@ -19,13 +19,9 @@ public class ItemRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotNull
-    @NotBlank
     private String description;
-    @NotNull
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "requestor_id", referencedColumnName = "id")
     private User requestor;
-    @NotNull
     private LocalDateTime created;
 }

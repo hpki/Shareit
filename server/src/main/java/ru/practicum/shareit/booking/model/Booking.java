@@ -20,21 +20,16 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotNull
     @Column(name = "start_time")
     private LocalDateTime start;
-    @NotNull
     @Column(name = "end_time")
     private LocalDateTime end;
-    @NotNull
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "item_id", referencedColumnName = "id")
     private Item item;
-    @NotNull
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "booker_id", referencedColumnName = "id")
     private User booker;
-    @NotNull
     @Enumerated(EnumType.STRING)
     private Status status;
 }

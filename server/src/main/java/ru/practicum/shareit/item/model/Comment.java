@@ -19,8 +19,6 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotNull
-    @NotBlank
     private String text;
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "item_id", referencedColumnName = "id")

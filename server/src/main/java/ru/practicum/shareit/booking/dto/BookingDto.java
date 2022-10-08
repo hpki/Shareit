@@ -12,9 +12,7 @@ public class BookingDto {
     private long id;
     private long itemId;
     private long bookerId;
-    @NotNull
     private LocalDateTime start;
-    @NotNull
     private LocalDateTime end;
 
     public BookingDto(long id, long itemId, long bookerId, LocalDateTime start, LocalDateTime end) {

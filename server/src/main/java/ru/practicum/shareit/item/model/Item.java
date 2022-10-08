@@ -19,11 +19,7 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotNull
-    @NotBlank
     private String name;
-    @NotNull
-    @NotBlank
     private String description;
     private boolean available;
     @ManyToOne(cascade = CascadeType.MERGE)

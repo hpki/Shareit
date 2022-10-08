@@ -15,11 +15,7 @@ import javax.validation.groups.Default;
 @Data
 public class UserDto {
     private long id;
-    @NotNull
-    @NotBlank
     private String name;
     @Email(groups = {UserUpdate.class, Default.class})
-    @NotNull
-    @NotBlank
     private String email;
 }

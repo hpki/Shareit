@@ -13,13 +13,8 @@ import java.util.List;
 @Data
 public class ItemDto {
     private long id;
-    @NotNull
-    @NotBlank
     private String name;
-    @NotNull
-    @NotBlank
     private String description;
-    @NotNull
     private Boolean available;
     private List<CommentDto> comments;
     private Long requestId;

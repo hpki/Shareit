@@ -21,8 +21,6 @@ public class ItemRequestDto {
     }
 
     private long id;
-    @NotNull
-    @NotBlank
     private String description;
     private LocalDateTime created;
     private List<ItemDto> items;

@@ -12,13 +12,8 @@ import java.util.List;
 @Data
 public class ItemWithBookingDto {
     private long id;
-    @NotNull
-    @NotBlank
     private String name;
-    @NotNull
-    @NotBlank
     private String description;
-    @NotNull
     private Boolean available;
     private BookingDto nextBooking;
     private BookingDto lastBooking;

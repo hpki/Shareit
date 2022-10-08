@@ -18,11 +18,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotNull
-    @NotBlank
     private String name;
     @Email
-    @NotNull
-    @NotBlank
     private String email;
 }
